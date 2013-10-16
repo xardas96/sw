@@ -21,6 +21,8 @@
 
 
 \usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{float}
 
 
 \title{Systemy wizyjne \\ Wspomagana rzeczywistoœæ} %to chyba nie tak brzmial
@@ -80,10 +82,40 @@ Wroc³awska}%by³o w templatce to zostawilem, ale nie wiem czy potrzebne
 \begin{itemize}
   \item Coœ o wspomaganej rzeczywistoœci
   \item Coœ o wspomaganej rzeczywistoœci
-  \item Skupienie na urz¹dzaniach mobilnych (System Android)
 \end{itemize}
+\begin{figure}
+\centering
+\includegraphics[scale=0.4]{arl}
+\end{figure}
 \end{frame}
 %Obrazek?
+
+\begin{frame}
+\frametitle{System android}
+\begin{columns}[t]
+\begin{column}{5cm}
+\begin{itemize}
+	  \item Zalety
+	  \begin{itemize}
+	    \item Mobilnoœæ
+	    \item Gotowe API do obs³ugi kamery
+	  \end{itemize}
+	  \item Wady
+	  \begin{itemize}
+	  	\item Ma³a wydajnoœæ obliczeniowa
+	  \end{itemize}
+	\end{itemize}
+\end{column}
+\begin{column}{5cm}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.15]{android}
+\end{figure}
+\end{column}
+	
+\end{columns}
+
+\end{frame}
 
 \begin{frame}
 \frametitle{Wizja}
@@ -109,19 +141,36 @@ Wroc³awska}%by³o w templatce to zostawilem, ale nie wiem czy potrzebne
   \item Obiekty 3D bêd¹ w formacie .obj (£adniejsza nazwa?)
   \item Krótki opis co tam siedzi w œrodku .obj
 \end{itemize}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.4]{building}
+\end{figure}
 \end{frame}
 \begin{frame}
 \frametitle{Kody QR}
-%Obrazki
+%\begin{columns}[t]
+%\begin{column}{5cm}
 \begin{itemize}
   \item Wielkoœæ stosowanych kodów QR
   \item Sposób reprezentacji danych w QR
 \end{itemize}
+%\end{column}
+%\begin{column}{5cm}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.3]{Qr4}
+	\includegraphics[scale=0.1]{QrB}
+\end{figure}
+%\end{column}
+%\end{columns}
+
 \end{frame}
 
 \subsection{Rozpoznawanie i dekodowanie kodów QR}
 \begin{frame}
 \frametitle{Rozpoznawanie i dekodowanie kodów QR}
+\begin{columns}[t]
+\begin{column}{7cm}
 \begin{itemize}
   \item Rozpoznawanie kodów QR
   \begin{itemize}
@@ -132,11 +181,25 @@ Wroc³awska}%by³o w templatce to zostawilem, ale nie wiem czy potrzebne
     \item Podajemy wstêpnie algorytm, czy ogólnikami?
   \end{itemize}
 \end{itemize}
+\end{column}
+\begin{column}{5cm}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.22]{Qrs}
+\end{figure}
+\end{column}
+\end{columns}
+
+
 \end{frame}
 
 \subsection{Wyœwietlanie obiektów 3D}
 \begin{frame}
 \frametitle{Wyœwietlanie obiektów 3D}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.15]{libgdx}
+\end{figure}
 \begin{itemize}
   \item Biblioteka libgdx
   \begin{itemize}
