@@ -85,14 +85,14 @@ Wroc³awska}
 \begin{itemize}
   \item Trójwymiarowe obiekty zakodowane przy pomocy kodów QR
   \begin{itemize}
-    \item kodowanie ca³ej informacji o obiekcie?
-    \item inny sposób?
+    \item kodowanie ca³ej informacji o obiekcie
+    \item kodowanie adresu URL do informacji o obiekcie
   \end{itemize}
   \pause
   \item Rozpoznawanie i dekodowanie wielu kodów QR
   \begin{itemize}
     \item w czasie rzeczywistym
-    \item pod ró¿nymi k¹tami
+    \item pod k¹tami ostrymi
   \end{itemize}
   \pause
   \item Wyœwietlenie obiektów na podgl¹dzie obrazu z kamery
@@ -120,8 +120,12 @@ Wroc³awska}
 %\begin{columns}[t]
 %\begin{column}{5cm}
 \begin{itemize}
-  \item Wielkoœæ stosowanych kodów QR
-  \item Sposób reprezentacji danych w QR
+  \item Kody QR stosowanie s¹ w wielu formatach
+  \begin{itemize}
+    \item najmniejszy 21x21 pikseli
+    \item najwiêkszy 177x177 pikseli 
+  \end{itemize}
+  \item Najwiêkszy kod QR mo¿e zakodowaæ 4296 znaków alfanumerycznych
 \end{itemize}
 %\end{column}
 %\begin{column}{5cm}
@@ -143,11 +147,13 @@ Wroc³awska}
 \begin{itemize}
   \item Rozpoznawanie kodów QR
   \begin{itemize}
-    \item Podajemy wstêpnie algorytm, czy ogólnikami?
+    \item Algorytm ``Fast Detection and Recognitionof QR codes in
+    High-Resolution Images''
+    \item Oparty na klasyfikatorze
   \end{itemize}
   \item Dekodowanie kodów QR
   \begin{itemize}
-    \item Podajemy wstêpnie algorytm, czy ogólnikami?
+    \item Ma³o z³o¿ony proces odwrotny do kodowania
   \end{itemize}
 \end{itemize}
 \end{column}
