@@ -3,7 +3,6 @@
 \mode<presentation>
 {
 \usetheme{Warsaw}
-
 \setbeamercovered{transparent}
 }
 
@@ -11,53 +10,24 @@
 \usepackage[cp1250]{inputenc}
 \usepackage{polski}
 
-
-% font definitions, try \usepackage{ae} instead of the following
-% three lines if you don't like this look
- \usepackage{mathptmx}
- \usepackage[scaled=.90]{helvet}
- \usepackage{courier}
-%\usepackage{ae}
-
+\usepackage{mathptmx}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
 
 \usepackage[T1]{fontenc}
 \usepackage{graphicx}
 \usepackage{float}
 
+\title{Systemy wizyjne \\ \textbf{Wspomagana rzeczywistoœæ}}
+\subtitle{Wizja systemu}
 
-\title{Systemy wizyjne \\ Wspomagana rzeczywistoœæ} %to chyba nie tak brzmial
-% ten temat :P, póŸniej siê zmieni
-
-\subtitle{Wizja}
-
-\author{Jacek Miiller \and Roman Sorokowski}
+\author{Jacek Miiller, Roman Sorokowski}
 
 \institute[Universities of]
 {Informatyka \\ Wydzia³ Informatyki i Zarz¹dzania \\ Politechnika
-Wroc³awska}%by³o w templatce to zostawilem, ale nie wiem czy potrzebne
+Wroc³awska}
 
 \date{\today}
-
-
-% This is only inserted into the PDF information catalog. Can be left
-% out.
-\subject{Talks}
-
-
-% Delete this, if you do not want the table of contents to pop up at
-% the beginning of each subsection:
-% \AtBeginSubsection[]
-% {
-% \begin{frame}<beamer>
-% \frametitle{Outline}
-% \tableofcontents[currentsection,currentsubsection]
-% \end{frame}
-% }
-
-% If you wish to uncover everything in a step-wise fashion, uncomment
-% the following command:
-
-%\beamerdefaultoverlayspecification{<+->}
 
 \begin{document}
 
@@ -65,44 +35,37 @@ Wroc³awska}%by³o w templatce to zostawilem, ale nie wiem czy potrzebne
 \titlepage
 \end{frame}
 
-%Spis treœci?
-% \begin{frame}
-% \frametitle{Outline}
-% \tableofcontents
-% % You might wish to add the option [pausesections]
-% \end{frame}
-
-
 \section{Wstêp}
-%\subsection{Wspomagana rzeczywistoœæ}
 \begin{frame}
 \frametitle{Wspomagana rzeczywistoœæ}
-%\framesubtitle{Subtitles are optional}
-%Wspomagana rzeczywistoœæ
 \begin{itemize}
-  \item Coœ o wspomaganej rzeczywistoœci
-  \item Coœ o wspomaganej rzeczywistoœci
+  \item £¹czy œwiat rzeczywisty ze œwiatem generowanym komputerowo
+  \item System interaktywny w czasie rzeczywistym
+  \item Umo¿liwia swodobê ruchów w trzech wymiarach
 \end{itemize}
 \begin{figure}
 \centering
 \includegraphics[scale=0.4]{arl}
 \end{figure}
 \end{frame}
-%Obrazek?
 
 \begin{frame}
-\frametitle{System android}
+\frametitle{Platforma - system Android}
 \begin{columns}[t]
 \begin{column}{5cm}
 \begin{itemize}
 	  \item Zalety
+	  \pause
 	  \begin{itemize}
 	    \item Mobilnoœæ
-	    \item Gotowe API do obs³ugi kamery
+	    \item Kamera zamontowana w urz¹dzeniu
+	    \item Sensory po³o¿enia
 	  \end{itemize}
-	  \item Wady
+	  \pause
+	  \item Wyzwania
+	  \pause
 	  \begin{itemize}
-	  	\item Ma³a wydajnoœæ obliczeniowa
+	  	\item Niewielka moc obliczeniowa
 	  \end{itemize}
 	\end{itemize}
 \end{column}
@@ -120,7 +83,11 @@ Wroc³awska}%by³o w templatce to zostawilem, ale nie wiem czy potrzebne
 \begin{frame}
 \frametitle{Wizja}
 \begin{itemize}
-  \item Obiekty 3D zakodowane za pomoc¹ kodów QR.
+  \item Trójwymiarowe obiekty zakodowane przy pomocy kodów QR
+  \begin{itemize}
+    \item kodowanie ca³ej informacji o obiekcie?
+    \item inny sposób?
+  \end{itemize}
   \pause
   \item Rozpoznawanie i dekodowanie wielu kodów QR
   \begin{itemize}
@@ -128,7 +95,7 @@ Wroc³awska}%by³o w templatce to zostawilem, ale nie wiem czy potrzebne
     \item pod ró¿nymi k¹tami
   \end{itemize}
   \pause
-  \item Wyœwietlenie obiektów 3D na obrazie z kamery
+  \item Wyœwietlenie obiektów na podgl¹dzie obrazu z kamery
 \end{itemize}
 \end{frame}
 
@@ -138,8 +105,10 @@ Wroc³awska}%by³o w templatce to zostawilem, ale nie wiem czy potrzebne
 \begin{frame}
 \frametitle{Reprezentacja obiektów 3D}
 \begin{itemize}
-  \item Obiekty 3D bêd¹ w formacie .obj (£adniejsza nazwa?)
-  \item Krótki opis co tam siedzi w œrodku .obj
+  \item Obiekty przechowywane bêd¹ w formacie OBJ
+  \begin{itemize}
+    \item uniwersalny format opisu modeli 3D
+  \end{itemize}
 \end{itemize}
 \begin{figure}
 	\centering
@@ -202,11 +171,14 @@ Wroc³awska}%by³o w templatce to zostawilem, ale nie wiem czy potrzebne
 \end{figure}
 \begin{itemize}
   \item Biblioteka libgdx
+	\pause
   \begin{itemize}
-    \item Coœ o bibliotece
-    \item Coœ o bibliotece
+    \item multiplatformowy silnik graficzny
+    \item open source
+    \item jêzyk implementacji: Java/C
   \end{itemize}
-  \item Czêstotliwoœæ odœwierzania (FPSy)?
+  \pause
+  \item \textbf{Proof of concept}
 \end{itemize}
 \end{frame}
 
