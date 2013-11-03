@@ -1,5 +1,8 @@
 package ar;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,27 +16,85 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	@Override
 	public List<Marker> readImage(InputStream is) throws IOException {
 		BufferedImage image = ImageIO.read(is);
-		return findMarkers(image);
+		return null;//findMarkers(image);
+	}
+	
+	public Image drawEdgels(InputStream is) throws IOException{
+		BufferedImage image = ImageIO.read(is);
+		long startTime = System.currentTimeMillis();
+		List<Edgel> edgels = findMarkers(image);
+		long stopTime = System.currentTimeMillis();
+		System.out.println("Czas znajdowania Edgelsów: " + (stopTime-startTime));
+		Graphics2D g = image.createGraphics();
+		System.out.println(edgels.size());
+		for(Edgel edgel: edgels){
+//			image.setRGB(edgel.getX(), edgel.getY(), new Color(0,0,255).getRGB());
+			g.setColor(Color.BLUE);
+			g.fillRect(edgel.getX()-2, edgel.getY()-2,4, 4);
+		}
+		return image;
 	}
 
-	private List<Marker> findMarkers(BufferedImage image) {
+	//private List<Marker> findMarkers(BufferedImage image) {
+	private List<Edgel> findMarkers(BufferedImage image){
 		List<Marker> foundMarkers = new ArrayList<Marker>();
+		List<Edgel> edgels = new ArrayList<>();
 		int height = image.getHeight();
 		int width = image.getWidth();
-		for (int y = 0; y < height; y += REGION_DIMENSION) {
-			for (int x = 0; x < width; x += REGION_DIMENSION) {
-				int left = Math.min(REGION_DIMENSION, width - x);
-				int top = Math.min(REGION_DIMENSION, height - y);
-				List<Edgel> edgels = findEdgels(image, x, y, left, top);
+		for (int y = 2; y < height-3; y += REGION_DIMENSION) {
+			for (int x = 2; x < width-3; x += REGION_DIMENSION) {
+				int left = Math.min(REGION_DIMENSION, width - x-3);
+				int top = Math.min(REGION_DIMENSION, height - y-3);
+				edgels.addAll(findEdgels(image, x, y, left, top));
 				//TODO the rest ;)
 			}
 		}
-		return foundMarkers;
+		return edgels;
 	}
 
 	private List<Edgel> findEdgels(BufferedImage image, int left, int top, int width, int height) {
 		List<Edgel> foundEdgels = new ArrayList<Edgel>();
-		// TODO find edgels
+		for(int y = 0; y < height; y+=SCAN_LINE_DIMENSION){
+			int[][] colorArray = prepareColorArrayForX(image, left, top+y);
+			int edgeValue, prevEdgeValue = 0, prevEdgeValue2 = 0;
+			for(int x = 0; x < width; x++, leftShiftArray(colorArray)){ //Shiftowanie szybsze od wyci¹gania wszystkich kolorów co iteracje?
+				colorArray[colorArray.length-1] = getRGBComposites(image, left+x+2, top+y);
+				int[] edgeValues = applyEdgeKernel(colorArray);
+				if(edgeValues[0] > TRESHOLD && edgeValues[1] > TRESHOLD && edgeValues[2] > TRESHOLD)
+					edgeValue = edgeValues[0];
+				else
+					edgeValue = 0;
+				if(prevEdgeValue > 0 && prevEdgeValue > prevEdgeValue2 && prevEdgeValue > edgeValue){
+					Edgel edgel = new Edgel(left+x-1, top+y);
+					edgel.setDirection(calculateSobel(image, edgel.getX(), edgel.getY()));
+					foundEdgels.add(edgel);
+				}
+				prevEdgeValue2 = prevEdgeValue;
+				prevEdgeValue = edgeValue;
+			}
+		}
+		//robimy to samo dla vertical, mozna by jakos to zrobic funkcja czy cos, ale w tym momencie nie wiem jak, wiec copy paste :p
+		
+		for(int x = 0; x < width; x+=SCAN_LINE_DIMENSION){
+			int[][] colorArray = prepareColorArrayForY(image, left+x, top);
+			int edgeValue, prevEdgeValue = 0, prevEdgeValue2 = 0;
+			for(int y = 0; y < height; y++, leftShiftArray(colorArray)){ //Shiftowanie szybsze od wyci¹gania wszystkich kolorów co iteracje?
+				colorArray[colorArray.length-1] = getRGBComposites(image, left+x, top+y+2);
+				int[] edgeValues = applyEdgeKernel(colorArray);
+				if(edgeValues[0] > TRESHOLD && edgeValues[1] > TRESHOLD && edgeValues[2] > TRESHOLD)
+					edgeValue = edgeValues[0];
+				else
+					edgeValue = 0;
+				if(prevEdgeValue > 0 && prevEdgeValue > prevEdgeValue2 && prevEdgeValue > edgeValue){
+					Edgel edgel = new Edgel(left+x-1, top+y);
+					edgel.setDirection(calculateSobel(image, edgel.getX(), edgel.getY()));
+					foundEdgels.add(edgel);
+				}
+				prevEdgeValue2 = prevEdgeValue;
+				prevEdgeValue = edgeValue;
+			}
+		}
+		
 		return foundEdgels;
 	}
 
@@ -45,5 +106,60 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		composites[2] = (rgb) & 0x0ff; // blue
 		return composites;
 	}
+	
+	private int getRGBComposite(BufferedImage image, int x, int y, int color) {
+		return (image.getRGB(x, y)>>color) & 0x0ff;
+	}
+	
+	private int[][] prepareColorArrayForX(BufferedImage image, int x, int y){
+		int[][] colorArray = new int[5][3]; //magicNumbers
+		for(int i = 0; i < colorArray.length-1; i++){
+			colorArray[i] = getRGBComposites(image, x-2+1*i, y);
+		}
+		return colorArray;
+	}
+	
+	private int[][] prepareColorArrayForY(BufferedImage image, int x, int y){
+		int[][] colorArray = new int[5][3]; //magicNumbers
+		for(int i = 0; i < colorArray.length-1; i++){
+			colorArray[i] = getRGBComposites(image,x , y-2+1*i);
+		}
+		return colorArray;
+	}
+	
+	private void leftShiftArray(int[][] array){
+		//bez forowania dla celów szybkoœciowych? (raczej ma³y boost)
+		for(int i =0; i < array.length-1; i++)
+			array[i] = array[i+1];
+	}
+	
+	private int[] applyEdgeKernel(int[][] array){
+		int[] values = new int[3];
+		for(int i =0; i < values.length; i++){
+			values[i] += FILTER_VECTOR[0]*array[0][i];
+			values[i] += FILTER_VECTOR[1]*array[1][i];
+			values[i] += FILTER_VECTOR[3]*array[3][i];
+			values[i] += FILTER_VECTOR[4]*array[4][i];
+			//meh nie podoba mi sie tak bez fora :p
+		}
+		return values;
+	}
+	
+	private double[] calculateSobel(BufferedImage image, int x, int y){
+		int gx =  getRGBComposite(image, x-1, y-1, RED_SHIFT);
+		gx += 2 * getRGBComposite(image, x, y-1, RED_SHIFT );
+		gx += getRGBComposite(image, x+1, y-1, RED_SHIFT );
+		gx -= getRGBComposite(image, x-1, y+1, RED_SHIFT );
+		gx -= 2 * getRGBComposite(image, x, y+1, RED_SHIFT );
+		gx -= getRGBComposite(image, x+1, y+1, RED_SHIFT );
 
+		int gy = getRGBComposite(image, x-1, y-1, RED_SHIFT );
+		gy += 2 * getRGBComposite(image, x-1, y, RED_SHIFT );
+		gy += getRGBComposite(image, x-1, y+1, RED_SHIFT);
+		gy -= getRGBComposite(image, x+1, y-1, RED_SHIFT );
+		gy -= getRGBComposite(image, x+1, y, RED_SHIFT);
+		gy -= getRGBComposite(image, x+1, y+1,RED_SHIFT);
+		double length = Math.sqrt(gx*gx + gy*gy); //osobna metoda?:P
+		return new double[]{gx/length, gy/length};
+	}
 }

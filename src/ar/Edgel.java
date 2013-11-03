@@ -3,6 +3,7 @@ package ar;
 public class Edgel {
 	private int x;
 	private int y;
+	private double[] direction; //znormalizowany wektor 2 elementowy (x i y);
 
 	public Edgel(int x, int y) {
 		this.x = x;
@@ -23,5 +24,17 @@ public class Edgel {
 
 	public void setY(int y) {
 		this.y = y;
+	}
+	
+	public double[] getDirection(){
+		return direction;
+	}
+	
+	public void setDirection(double[] direction){
+		this.direction = direction;
+	}
+	
+	public String toString(){
+		return "Edgel ("+x+ ", " + y + ")";
 	}
 }
