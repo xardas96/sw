@@ -136,11 +136,11 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	private int[] applyEdgeKernel(int[][] array){
 		int[] values = new int[3];
 		for(int i =0; i < values.length; i++){
-			values[i] += FILTER_VECTOR[0]*array[0][i];
+			values[i] = FILTER_VECTOR[0]*array[0][i];
 			values[i] += FILTER_VECTOR[1]*array[1][i];
 			values[i] += FILTER_VECTOR[3]*array[3][i];
 			values[i] += FILTER_VECTOR[4]*array[4][i];
-			//meh nie podoba mi sie tak bez fora :p
+			values[i] = Math.abs(values[i]);
 		}
 		return values;
 	}
