@@ -1,29 +1,23 @@
 package ar;
 
 public class Edgel {
-	private int x;
-	private int y;
+	private Vector2d position;
 	private Vector2d direction; // znormalizowany wektor 2 elementowy (x i y);
 
 	public Edgel(int x, int y) {
-		this.x = x;
-		this.y = y;
+		position = new Vector2d(x, y);
 	}
 	
 	public int getX() {
-		return x;
-	}
-
-	public void setX(int x) {
-		this.x = x;
+		return (int) position.getX();
 	}
 
 	public int getY() {
-		return y;
+		return (int) position.getY();
 	}
-
-	public void setY(int y) {
-		this.y = y;
+	
+	public Vector2d getPosition() {
+		return position;
 	}
 
 	public Vector2d getDirection() {
@@ -39,6 +33,6 @@ public class Edgel {
 	}
 
 	public String toString() {
-		return "Edgel (" + x + ", " + y + ")";
+		return "Edgel (" + position.getX() + ", " + position.getY() + ")";
 	}
 }

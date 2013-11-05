@@ -102,6 +102,9 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				if (regionEdgels.size() > EDGELS_ONLINE) {
 					lineSegments = findLineSegments(regionEdgels);
 					segments.addAll(lineSegments);
+					for(LineSegment s : lineSegments) {
+						System.out.println(s.getSupportingEdgels() + " start: " + s.getStart() + " end: " + s.getEnd());
+					}
 				}
 				// TODO the rest ;)
 			}
@@ -134,7 +137,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 					LineSegment lineSegment = new LineSegment();
 					lineSegment.setStart(r1);
 					lineSegment.setEnd(r2);
-					lineSegment.setDirection(r1.getDirection());
+					lineSegment.setDirection(r2.getDirection());
 					for(Edgel edgelInRegion : edgelsInRegion) {
 						if(lineSegment.isInLine(edgelInRegion)) {
 							lineSegment.addSupportingEdgel(edgelInRegion);
@@ -149,38 +152,36 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				double u1 = 0;
 				double u2 = 50000;
 				Vector2d direction = lineSegmentInRun.getStart().getDirection().subtract(lineSegmentInRun.getEnd().getDirection());
-				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getDirection().getY(), lineSegmentInRun.getStart().getDirection().getX());
+				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getY(), lineSegmentInRun.getStart().getX());
 				if (Math.abs(direction.getX()) <= Math.abs(direction.getY())) {
 					for (Edgel edgel : lineSegmentInRun.getSupportingEdgels()) {
-						Vector2d edgelDirection = edgel.getDirection();
-						if (edgelDirection.getY() > u1) {
-							u1 = edgelDirection.getY();
+						if (edgel.getY() > u1) {
+							u1 = edgel.getY();
 							lineSegmentInRun.setStart(edgel);
 						}
-						if (edgelDirection.getY() < u2) {
-							u2 = edgelDirection.getY();
+						if (edgel.getY() < u2) {
+							u2 = edgel.getY();
 							lineSegmentInRun.setEnd(edgel);
 						}
 					}
 				} else {
 					for (Edgel edgel : lineSegmentInRun.getSupportingEdgels()) {
-						Vector2d edgelDirection = edgel.getDirection();
-						if (edgelDirection.getX() > u1) {
-							u1 = edgelDirection.getX();
+						if (edgel.getX() > u1) {
+							u1 = edgel.getX();
 							lineSegmentInRun.setStart(edgel);
 						}
-						if (edgelDirection.getX() < u2) {
-							u2 = edgelDirection.getX();
+						if (edgel.getX() < u2) {
+							u2 = edgel.getX();
 							lineSegmentInRun.setEnd(edgel);
 						}
 
 					}
 				}
-				double dot = Vector2d.dot(lineSegmentInRun.getEnd().getDirection().subtract(lineSegmentInRun.getStart().getDirection()), orientation);
+				double dot = Vector2d.dot(lineSegmentInRun.getEnd().getPosition().subtract(lineSegmentInRun.getStart().getPosition()), orientation);
 				if (dot < 0.0f) {
 					lineSegmentInRun.swapEndpoints();
 				}
-				Vector2d newDirection = lineSegmentInRun.getEnd().getDirection().subtract(lineSegmentInRun.getStart().getDirection());
+				Vector2d newDirection = lineSegmentInRun.getEnd().getPosition().subtract(lineSegmentInRun.getStart().getPosition());
 				newDirection.normalize(); 
 				lineSegmentInRun.setDirection(newDirection);
 				foundSegments.add(lineSegmentInRun);
