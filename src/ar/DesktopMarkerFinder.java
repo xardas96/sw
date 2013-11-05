@@ -102,7 +102,6 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				if (regionEdgels.size() > EDGELS_ONLINE) {
 					lineSegments = findLineSegments(regionEdgels);
 					segments.addAll(lineSegments);
-
 				}
 				// TODO the rest ;)
 			}
@@ -136,65 +135,56 @@ public class DesktopMarkerFinder implements MarkerFinder {
 					lineSegment.setStart(r1);
 					lineSegment.setEnd(r2);
 					lineSegment.setDirection(r1.getDirection());
-					for (int o = 0; o < edgelsInRegion.size(); o++) {
-						if (lineSegment.isInLine(edgelsInRegion.get(o))) {
-							lineSegment.addSupportingEdgel(edgelsInRegion.get(o));
+					for(Edgel edgelInRegion : edgelsInRegion) {
+						if(lineSegment.isInLine(edgelInRegion)) {
+							lineSegment.addSupportingEdgel(edgelInRegion);
 						}
 					}
-
 					if (lineSegment.getSupportingEdgelsSize() > lineSegmentInRun.getSupportingEdgelsSize()) {
 						lineSegmentInRun = lineSegment;
 					}
 				}
 			}
-
 			if (lineSegmentInRun.getSupportingEdgelsSize() >= EDGELS_ONLINE) {
 				double u1 = 0;
 				double u2 = 50000;
-
-				double[] direction = new double[] { lineSegmentInRun.getStart().getDirection()[0] - lineSegmentInRun.getEnd().getDirection()[0], lineSegmentInRun.getStart().getDirection()[1] - lineSegmentInRun.getEnd().getDirection()[1] };
-				double[] orientation = new double[] { -lineSegmentInRun.getStart().getDirection()[1], lineSegmentInRun.getStart().getDirection()[0] };
-
-				if (Math.abs(direction[0]) <= Math.abs(direction[1])) {
+				Vector2d direction = lineSegmentInRun.getStart().getDirection().subtract(lineSegmentInRun.getEnd().getDirection());
+				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getDirection().getY(), lineSegmentInRun.getStart().getDirection().getX());
+				if (Math.abs(direction.getX()) <= Math.abs(direction.getY())) {
 					for (Edgel edgel : lineSegmentInRun.getSupportingEdgels()) {
-						double[] edgelDirection = edgel.getDirection();
-						if (edgelDirection[1] > u1) {
-							u1 = edgelDirection[1];
+						Vector2d edgelDirection = edgel.getDirection();
+						if (edgelDirection.getY() > u1) {
+							u1 = edgelDirection.getY();
 							lineSegmentInRun.setStart(edgel);
 						}
-						if (edgelDirection[1] < u2) {
-							u2 = edgelDirection[1];
+						if (edgelDirection.getY() < u2) {
+							u2 = edgelDirection.getY();
 							lineSegmentInRun.setEnd(edgel);
 						}
 					}
 				} else {
 					for (Edgel edgel : lineSegmentInRun.getSupportingEdgels()) {
-						double[] edgelDirection = edgel.getDirection();
-						if (edgelDirection[0] > u1) {
-							u1 = edgelDirection[0];
+						Vector2d edgelDirection = edgel.getDirection();
+						if (edgelDirection.getX() > u1) {
+							u1 = edgelDirection.getX();
 							lineSegmentInRun.setStart(edgel);
 						}
-						if (edgelDirection[0] < u2) {
-							u2 = edgelDirection[0];
+						if (edgelDirection.getX() < u2) {
+							u2 = edgelDirection.getX();
 							lineSegmentInRun.setEnd(edgel);
 						}
 
 					}
 				}
-				double[] newDirection = new double[] { lineSegmentInRun.getEnd().getDirection()[0] - lineSegmentInRun.getStart().getDirection()[0], lineSegmentInRun.getEnd().getDirection()[1] - lineSegmentInRun.getStart().getDirection()[1] };
-				double dot = (newDirection[0] * orientation[0] + newDirection[1] * orientation[1]);
+				double dot = Vector2d.dot(lineSegmentInRun.getEnd().getDirection().subtract(lineSegmentInRun.getStart().getDirection()), orientation);
 				if (dot < 0.0f) {
 					lineSegmentInRun.swapEndpoints();
 				}
-				newDirection = new double[] { lineSegmentInRun.getEnd().getDirection()[0] - lineSegmentInRun.getStart().getDirection()[0], lineSegmentInRun.getEnd().getDirection()[1] - lineSegmentInRun.getStart().getDirection()[1] };
-				double length = Math.sqrt(newDirection[0] * newDirection[0] + newDirection[1] * newDirection[1]);
-				newDirection = new double[] { newDirection[0] / length, newDirection[1] / length };
+				Vector2d newDirection = lineSegmentInRun.getEnd().getDirection().subtract(lineSegmentInRun.getStart().getDirection());
+				newDirection.normalize(); 
 				lineSegmentInRun.setDirection(newDirection);
 				foundSegments.add(lineSegmentInRun);
-				for (int i = 0; i < lineSegmentInRun.getSupportingEdgelsSize(); i++) {
-					Edgel suppEdgel = lineSegmentInRun.getSupportingEdgels().get(i);
-					edgelsInRegion.remove(suppEdgel);
-				}
+				edgelsInRegion.removeAll(lineSegmentInRun.getSupportingEdgels());
 			}
 		} while (lineSegmentInRun.getSupportingEdgelsSize() >= EDGELS_ONLINE && edgelsInRegion.size() >= EDGELS_ONLINE);
 		return foundSegments;
@@ -293,7 +283,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		return values;
 	}
 
-	private double[] calculateSobel(BufferedImage image, int x, int y) {
+	private Vector2d calculateSobel(BufferedImage image, int x, int y) {
 		int gx = getRGBComposite(image, x - 1, y - 1, RED_SHIFT);
 		gx += 2 * getRGBComposite(image, x, y - 1, RED_SHIFT);
 		gx += getRGBComposite(image, x + 1, y - 1, RED_SHIFT);
@@ -307,7 +297,8 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		gy -= getRGBComposite(image, x + 1, y - 1, RED_SHIFT);
 		gy -= getRGBComposite(image, x + 1, y, RED_SHIFT);
 		gy -= getRGBComposite(image, x + 1, y + 1, RED_SHIFT);
-		double length = Math.sqrt(gx * gx + gy * gy); // osobna metoda?:P
-		return new double[] { gx / length, gy / length };
+		Vector2d vec = new Vector2d(gx, gy);
+		vec.normalize();
+		return vec;
 	}
 }

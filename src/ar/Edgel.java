@@ -3,7 +3,7 @@ package ar;
 public class Edgel {
 	private int x;
 	private int y;
-	private double[] direction; // znormalizowany wektor 2 elementowy (x i y);
+	private Vector2d direction; // znormalizowany wektor 2 elementowy (x i y);
 
 	public Edgel(int x, int y) {
 		this.x = x;
@@ -26,16 +26,16 @@ public class Edgel {
 		this.y = y;
 	}
 
-	public double[] getDirection() {
+	public Vector2d getDirection() {
 		return direction;
 	}
-
-	public void setDirection(double[] direction) {
+	
+	public void setDirection(Vector2d direction) {
 		this.direction = direction;
 	}
-
+	
 	public boolean isOrientationCompatible(Edgel edgel) {
-		return direction[0] * edgel.direction[0] + direction[1] * edgel.direction[1] > 0.38f; // magic
+		return direction.getX() * edgel.direction.getX() + direction.getY() * edgel.direction.getY() > 0.38f; // magic
 	}
 
 	public String toString() {

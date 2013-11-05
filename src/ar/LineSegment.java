@@ -6,7 +6,7 @@ import java.util.List;
 public class LineSegment {
 	private Edgel start;
 	private Edgel end;
-	private double[] direction;
+	private Vector2d direction;
 	private List<Edgel> supportingEdgels;
 
 	public LineSegment() {
@@ -21,12 +21,12 @@ public class LineSegment {
 		this.end = stop;
 	}
 
-	public void setDirection(double[] direction) {
-		this.direction = direction;
+	public Vector2d getDirection() {
+		return direction;
 	}
 
-	public double[] getDirection() {
-		return direction;
+	public void setDirection(Vector2d direction) {
+		this.direction = direction;
 	}
 
 	public Edgel getStart() {
