@@ -18,6 +18,7 @@ public interface MarkerFinder {
 	public static final int RED_SHIFT = 16;
 	public static final int GREEN_SHIFT = 8;
 	public static final int BLUE_SHIFT = 0;
+	public static final int EDGELS_ONLINE = 5;
 
 	public List<Marker> readImage(InputStream is) throws Exception;
 }
