@@ -16,9 +16,21 @@ public class Vector2d {
 	public double getY() {
 		return y;
 	}
+	
+	public void setX(double x){
+		this.x = x;
+	}
+	
+	public void setY(double y){
+		this.y = y;
+	}
 
 	public double getLength() {
 		return Math.sqrt(x * x + y * y);
+	}
+	
+	public double getSquaredLength(){
+		return x*x+y*y;
 	}
 
 	public void normalize() {
@@ -30,6 +42,18 @@ public class Vector2d {
 	public Vector2d subtract(Vector2d vector) {
 		double x = this.x - vector.x;
 		double y = this.y - vector.y;
+		return new Vector2d(x, y);
+	}
+	
+	public Vector2d add(Vector2d vector) {
+		double x = this.x + vector.x;
+		double y = this.y + vector.y;
+		return new Vector2d(x, y);
+	}
+	
+	public Vector2d multiply(Vector2d vector){
+		double x = this.x *vector.x;
+		double y = this.y * vector.y;
 		return new Vector2d(x, y);
 	}
 

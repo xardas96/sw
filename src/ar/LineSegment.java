@@ -8,6 +8,7 @@ public class LineSegment {
 	private Edgel end;
 	private Vector2d direction;
 	private List<Edgel> supportingEdgels;
+	private boolean marged;
 
 	public LineSegment() {
 		supportingEdgels = new ArrayList<Edgel>();
@@ -66,5 +67,13 @@ public class LineSegment {
 			isCompatible = Math.abs(distance) < 0.75f;
 		}
 		return isCompatible;
+	}
+
+	public boolean isMarged() {
+		return marged;
+	}
+
+	public void setMarged(boolean marged) {
+		this.marged = marged;
 	}
 }
