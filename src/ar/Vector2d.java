@@ -60,4 +60,12 @@ public class Vector2d {
 	public static double dot(Vector2d v1, Vector2d v2) {
 		return v1.x * v2.x + v1.y * v2.y;
 	}
+	
+	public Vector2d negate(){
+		return new Vector2d(-x, -y);
+	}
+	
+	public String toString(){
+		return "Vector2d("+x+", " + y+")";
+	}
 }

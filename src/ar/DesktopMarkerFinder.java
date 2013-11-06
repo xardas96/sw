@@ -102,18 +102,30 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				List<LineSegment> lineSegments;
 				if (regionEdgels.size() > EDGELS_ONLINE) {
 					lineSegments = findLineSegments(regionEdgels);
-					mergeLineSegments(image, lineSegments);
+					//mergeLineSegments(image, lineSegments);
 					segments.addAll(lineSegments);
 				}
 			}
 		}
 		//System.out.println(edgels.size());
+		System.out.println("Przed:" + segments.size());
 		mergeLineSegments(image, segments);
+		System.out.println("Po: " + segments.size());
+		extendLines(image, segments);
 		// TODO the rest ;)
 		return segments;
 	}
 
 	// TODO tu zaczyna siê "dobry" kod :)
+
+	private void extendLines(BufferedImage image, List<LineSegment> segments) {
+		for(LineSegment segment: segments){
+			mergeAvaliable(image, segment.getEnd().getPosition(), segment.getEnd().getPosition(), 999, segment.getDirection(), segment.getEnd().getDirection());
+			Vector2d v = segment.getDirection().negate();
+			mergeAvaliable(image, segment.getStart().getPosition(), segment.getStart().getPosition(), 999, v, segment.getEnd().getDirection());
+		}
+		
+	}
 
 	private List<LineSegment> mergeLineSegments(BufferedImage image, List<LineSegment> segments){
 		final double angleTreshold = 0.99;
@@ -140,7 +152,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 					LineSegment segment2 = segments.get(distances.get(j).getIndex());
 					Vector2d mergeLineStart = segment1.getEnd().getPosition();
 					Vector2d mergeLineEnd = segment2.getStart().getPosition();
-					double length = Math.sqrt(distances.get(j).getDistance());
+					double length = segment2.getStart().getPosition().subtract(segment1.getEnd().getPosition()).getLength();
 					Vector2d direction = mergeLineEnd.subtract(mergeLineStart);
 					direction.normalize();
 					if(mergeAvaliable(image,mergeLineStart,mergeLineEnd,length, direction, segment1.getEnd().getDirection())){
@@ -165,18 +177,30 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		return segments;
 	}
 	
+	private boolean imageContains(BufferedImage image, int x, int y){
+		int width = image.getWidth();
+		int height =image.getHeight();
+		return x >=2 && x < width-3 && y >= 2 && y < height-3;
+	}
+	
 	private boolean mergeAvaliable(BufferedImage image, Vector2d mergeLineStart,Vector2d mergeLineEnd, double length, Vector2d direction, Vector2d gradient) {
 		Vector2d normal = new Vector2d(direction.getY(), -direction.getX());
 		boolean merge = true;
 		Vector2d point = mergeLineStart;
 		for(int i = 0; i < length && merge; i++){
 			point = point.add(direction);
-			merge =  applyEdgeKernelX(image, (int) Math.round(point.getX()),(int) Math.round(point.getY())) >= TRESHOLD/2;
-			merge &= applyEdgeKernelY(image, (int) Math.round(point.getX()),(int) Math.round(point.getY())) >= TRESHOLD/2;
+			int x = (int) point.getX();
+			int y = (int) point.getY();
+			int xPlusNorm =(int) (point.getX()+normal.getX());
+			int yPlusNorm =(int) (point.getY()+normal.getY());
+			int xMinusNorm =(int) (point.getX()-normal.getX());
+			int yMinusNorm =(int) (point.getY()-normal.getY());
+			merge = imageContains(image, x, y) && applyEdgeKernelX(image, x,y) >= TRESHOLD/2;
+			merge |= imageContains(image, x, y) && applyEdgeKernelY(image, x,y) >= TRESHOLD/2;
 			if(merge){
-				merge = Vector2d.dot(calculateSobel(image, (int) Math.round(point.getX()),(int) Math.round(point.getY())), gradient) > 0.38; //zmienna
-				merge |= Vector2d.dot(calculateSobel(image,(int) Math.round(point.getX()+normal.getX()) ,(int) Math.round(point.getY() + normal.getY())), gradient) > 0.38;
-				merge |= Vector2d.dot(calculateSobel(image,(int) Math.round(point.getX()-normal.getX()) ,(int) Math.round(point.getY()- normal.getY())), gradient) > 0.38;
+				merge = imageContains(image, x, y) && Vector2d.dot(calculateSobel(image, x,y), gradient) > 0.38; //zmienna
+				merge |=imageContains(image, xPlusNorm, yPlusNorm) && Vector2d.dot(calculateSobel(image,xPlusNorm ,yPlusNorm), gradient) > 0.38;
+				merge |=imageContains(image, xMinusNorm, yMinusNorm) && Vector2d.dot(calculateSobel(image,xMinusNorm ,yMinusNorm), gradient) > 0.38;
 			}
 		}
 		mergeLineEnd.setX(point.getX()-direction.getX());
