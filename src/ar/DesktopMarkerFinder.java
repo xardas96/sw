@@ -124,7 +124,6 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			Vector2d v = segment.getDirection().negate();
 			mergeAvaliable(image, segment.getStart().getPosition(), segment.getStart().getPosition(), 999, v, segment.getEnd().getDirection());
 		}
-		
 	}
 
 	private List<LineSegment> mergeLineSegments(BufferedImage image, List<LineSegment> segments){
@@ -160,12 +159,12 @@ public class DesktopMarkerFinder implements MarkerFinder {
 						Vector2d newDir = segment1.getEnd().getPosition().subtract(segment1.getStart().getPosition());
 						newDir.normalize();
 						segment1.setDirection(newDir);
-						segment2.setMarged(true);
+						segment2.setMerged(true);
 					}
 				}
 				boolean merged = false;
 				for(int j = segments.size()-1; j >=0; j--){
-					if(segments.get(j).isMarged()){
+					if(segments.get(j).isMerged()){
 						segments.remove(j);
 						merged = true;
 					}

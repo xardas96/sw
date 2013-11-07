@@ -8,7 +8,7 @@ public class LineSegment {
 	private Edgel end;
 	private Vector2d direction;
 	private List<Edgel> supportingEdgels;
-	private boolean marged;
+	private boolean merged;
 
 	public LineSegment() {
 		supportingEdgels = new ArrayList<Edgel>();
@@ -69,11 +69,11 @@ public class LineSegment {
 		return isCompatible;
 	}
 
-	public boolean isMarged() {
-		return marged;
+	public boolean isMerged() {
+		return merged;
 	}
 
-	public void setMarged(boolean marged) {
-		this.marged = marged;
+	public void setMerged(boolean merged) {
+		this.merged = merged;
 	}
 }
