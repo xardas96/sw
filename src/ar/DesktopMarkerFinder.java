@@ -2,6 +2,7 @@ package ar;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -18,8 +19,8 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	private Random random;
 
 	public DesktopMarkerFinder() {
-		random = new Random(); // ¿eby by³o szybiej, jako pole w klasie tworzone
-								// raz
+		// ¿eby by³o szybiej, jako pole w klasie tworzone raz
+		random = new Random(); 
 	}
 
 	@Override
@@ -53,7 +54,13 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		for (LineSegment segment : edgels) {
 			g.setColor(Color.YELLOW);
 			g.setStroke(new BasicStroke(2.0f));
-			g.drawLine(segment.getStart().getX(), segment.getStart().getY(), segment.getEnd().getX(), segment.getEnd().getY());
+			if (segment.isStartCorner()) {
+				g.drawLine(segment.getStart().getX(), segment.getStart().getY(), segment.getStart().getX(), segment.getStart().getY());
+			}
+			if (segment.isEndCorner()) {
+				g.drawLine(segment.getEnd().getX(), segment.getEnd().getY(), segment.getEnd().getX(), segment.getEnd().getY());
+			}
+			drawArrow(image, segment.getStart().getX(), segment.getStart().getY(), segment.getEnd().getX(), segment.getEnd().getY(), segment.getDirection().getX(), segment.getDirection().getY());
 		}
 		return image;
 	}
@@ -117,7 +124,9 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		segments = findLinesWithCorners(image, segments);
 		List<Marker> markers = new ArrayList<Marker>();
 		do {
-			LineSegment chainSegment = segments.remove(0);
+			LineSegment chainSegment = segments.get(0);
+			segments.set(0, segments.get(segments.size() - 1));
+			segments.remove(segments.size() - 1);
 			List<LineSegment> chain = new ArrayList<LineSegment>();
 			int length = 1;
 			findChainOfLines(chainSegment, true, segments, chain, length);
@@ -131,6 +140,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				marker.reconstructCorners();
 				markers.add(marker);
 			}
+			System.out.println(chain);
 		} while (!segments.isEmpty());
 		return markers;
 	}
@@ -149,20 +159,29 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				List<LineSegment> lineSegments;
 				if (regionEdgels.size() > EDGELS_ONLINE) {
 					lineSegments = findLineSegments(regionEdgels);
-					mergeLineSegments(image, lineSegments);
+//					mergeLineSegments(image, lineSegments);
 					segments.addAll(lineSegments);
 				}
 			}
 		}
-		System.out.println("Przed:" + segments.size());
-		mergeLineSegments(image, segments);
-		System.out.println("Po: " + segments.size());
-		extendLines(image, segments);
-		segments = findLinesWithCorners(image, segments);
+//		System.out.println("Przed:" + segments.size());
+//		mergeLineSegments(image, segments);
+//		System.out.println("Po: " + segments.size());
+//		extendLines(image, segments);
+//		segments = findLinesWithCorners(image, segments);
 		return segments;
 	}
-
+	
 	// TODO tu zaczyna siê "dobry" kod :)
+	
+	private void drawArrow(BufferedImage image, int x1, int y1, int x2, int y2, double xn, double yn) {
+		Graphics g = image.getGraphics();
+		g.setColor(Color.GREEN);
+		g.drawLine(x1, y1, x2, y2);
+		g.setColor(Color.RED);
+		g.drawLine(x2, y2, x2 + (int) (5.0 * (-xn + yn)), y2 + (int) (5.0 * (-yn - xn)));
+		g.drawLine(x2, y2, x2 + (int) (5.0 * (-xn - yn)), y2 + (int) (5.0 * (-yn + xn)));
+	}
 
 	private void findChainOfLines(LineSegment startSegment, boolean atStartPoint, List<LineSegment> lineSegments, List<LineSegment> chain, int length) {
 		boolean isFound = false;
@@ -176,12 +195,13 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			}
 			if (isFound) {
 				double orientation = startSegment.getDirection().getX() * segment.getDirection().getY() - startSegment.getDirection().getY() * segment.getDirection().getX();
-				isFound &= !(atStartPoint && orientation <= 0 || atStartPoint && orientation >= 0);
+				isFound &= !(atStartPoint && orientation > 0 || atStartPoint && orientation < 0);
 			}
 			if (isFound) {
 				length++;
 				LineSegment chainSegment = segment;
-				lineSegments.remove(segment);
+				lineSegments.set(i, lineSegments.get(lineSegments.size() - 1));
+				lineSegments.remove(lineSegments.size() - 1);
 				if (length == 4) {
 					chain.add(chainSegment);
 				} else {
@@ -340,7 +360,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 					LineSegment lineSegment = new LineSegment();
 					lineSegment.setStart(r1);
 					lineSegment.setEnd(r2);
-					lineSegment.setDirection(r2.getDirection());
+					lineSegment.setDirection(r1.getDirection());
 					for (Edgel edgelInRegion : edgelsInRegion) {
 						if (lineSegment.isInLine(edgelInRegion)) {
 							lineSegment.addSupportingEdgel(edgelInRegion);
@@ -355,7 +375,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				double u1 = 0;
 				double u2 = 50000;
 				Vector2d direction = lineSegmentInRun.getStart().getPosition().subtract(lineSegmentInRun.getEnd().getPosition());
-				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getY(), lineSegmentInRun.getStart().getX());
+				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getDirection().getY(), lineSegmentInRun.getStart().getDirection().getX());
 				if (Math.abs(direction.getX()) <= Math.abs(direction.getY())) {
 					for (Edgel edgel : lineSegmentInRun.getSupportingEdgels()) {
 						if (edgel.getY() > u1) {
@@ -398,14 +418,8 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		for (int y = 0; y < height; y += SCAN_LINE_DIMENSION) {
 			int[][] colorArray = prepareColorArrayForX(image, left, top + y);
 			int edgeValue, prevEdgeValue = 0, prevEdgeValue2 = 0;
-			for (int x = 0; x < width; x++, leftShiftArray(colorArray)) { // Shiftowanie
-																			// szybsze
-																			// od
-																			// wyci¹gania
-																			// wszystkich
-																			// kolorów
-																			// co
-																			// iteracje?
+			// Shiftowanie szybsze od wyci¹gania wszystkich kolorów co iteracje?
+			for (int x = 0; x < width; x++, leftShiftArray(colorArray)) { 
 				colorArray[colorArray.length - 1] = getRGBComposites(image, left + x + 2, top + y);
 				int[] edgeValues = applyEdgeKernel(colorArray);
 				if (edgeValues[0] > TRESHOLD && edgeValues[1] > TRESHOLD && edgeValues[2] > TRESHOLD)
@@ -424,17 +438,11 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		// robimy to samo dla vertical, mozna by jakos to zrobic funkcja czy
 		// cos, ale w tym momencie nie wiem jak, wiec copy paste :p
 
+		// Shiftowanie szybsze od wyci¹gania wszystkich kolorów co iteracje?
 		for (int x = 0; x < width; x += SCAN_LINE_DIMENSION) {
 			int[][] colorArray = prepareColorArrayForY(image, left + x, top);
 			int edgeValue, prevEdgeValue = 0, prevEdgeValue2 = 0;
-			for (int y = 0; y < height; y++, leftShiftArray(colorArray)) { // Shiftowanie
-																			// szybsze
-																			// od
-																			// wyci¹gania
-																			// wszystkich
-																			// kolorów
-																			// co
-																			// iteracje?
+			for (int y = 0; y < height; y++, leftShiftArray(colorArray)) {
 				colorArray[colorArray.length - 1] = getRGBComposites(image, left + x, top + y + 2);
 				int[] edgeValues = applyEdgeKernel(colorArray);
 				if (edgeValues[0] > TRESHOLD && edgeValues[1] > TRESHOLD && edgeValues[2] > TRESHOLD)
@@ -450,7 +458,6 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				prevEdgeValue = edgeValue;
 			}
 		}
-
 		return foundEdgels;
 	}
 

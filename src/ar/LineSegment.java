@@ -65,8 +65,8 @@ public class LineSegment {
 			cross -= (end.getY() - start.getY()) * (edgel.getX() - start.getX());
 			int d1 = start.getX() - end.getX();
 			int d2 = start.getY() - end.getY();
-			float distance = (float) (cross / Math.sqrt((d1 * d1) + (d2 * d2)));
-			isCompatible = Math.abs(distance) < 0.75f;
+			float distance = (float) (cross / new Vector2d(d1, d2).getLength());
+			isCompatible &= Math.abs(distance) < 0.75f;
 		}
 		return isCompatible;
 	}
@@ -102,11 +102,11 @@ public class LineSegment {
 	public Vector2d getIntersection(LineSegment segment) {
 		Vector2d otherStartPosition = segment.start.getPosition();
 		Vector2d otherEndPosition = segment.end.getPosition();
-		double denom = ((otherEndPosition.getY() - otherStartPosition.getY()) * (end.getPosition().getX() - start.getPosition().getX())) - ((otherEndPosition.getX() - otherStartPosition.getX()) * (end.getPosition().getY() - start.getPosition().getY()));
-		double nume_a = ((otherEndPosition.getX() - otherStartPosition.getX()) * (start.getPosition().getY() - otherStartPosition.getY())) - ((otherEndPosition.getY() - otherStartPosition.getY()) * (start.getPosition().getX() - otherStartPosition.getX()));
+		double denom = ((otherEndPosition.getY() - otherStartPosition.getY()) * (end.getX() - start.getX())) - ((otherEndPosition.getX() - otherStartPosition.getX()) * (end.getY() - start.getY()));
+		double nume_a = ((otherEndPosition.getX() - otherStartPosition.getX()) * (start.getY() - otherStartPosition.getY())) - ((otherEndPosition.getY() - otherStartPosition.getY()) * (start.getX() - otherStartPosition.getX()));
 		double ua = nume_a / denom;
-		double x = start.getPosition().getX() + ua * (end.getPosition().getX() - start.getPosition().getX());
-		double y = start.getPosition().getY() + ua * (end.getPosition().getY() - start.getPosition().getY());
+		double x = start.getX() + ua * (end.getX() - start.getX());
+		double y = start.getY() + ua * (end.getY() - start.getY());
 		return new Vector2d(x, y);
 	}
 }
