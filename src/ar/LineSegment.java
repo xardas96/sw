@@ -9,6 +9,8 @@ public class LineSegment {
 	private Vector2d direction;
 	private List<Edgel> supportingEdgels;
 	private boolean merged;
+	private boolean startCorner;
+	private boolean endCorner;
 
 	public LineSegment() {
 		supportingEdgels = new ArrayList<Edgel>();
@@ -75,5 +77,36 @@ public class LineSegment {
 
 	public void setMerged(boolean merged) {
 		this.merged = merged;
+	}
+
+	public void setStartCorner(boolean startCorner) {
+		this.startCorner = startCorner;
+	}
+
+	public boolean isStartCorner() {
+		return startCorner;
+	}
+
+	public void setEndCorner(boolean endCorner) {
+		this.endCorner = endCorner;
+	}
+
+	public boolean isEndCorner() {
+		return endCorner;
+	}
+
+	public boolean isOrientationCompatible(LineSegment segment) {
+		return Vector2d.dot(direction, segment.direction) > 0.92f;
+	}
+
+	public Vector2d getIntersection(LineSegment segment) {
+		Vector2d otherStartPosition = segment.start.getPosition();
+		Vector2d otherEndPosition = segment.end.getPosition();
+		double denom = ((otherEndPosition.getY() - otherStartPosition.getY()) * (end.getPosition().getX() - start.getPosition().getX())) - ((otherEndPosition.getX() - otherStartPosition.getX()) * (end.getPosition().getY() - start.getPosition().getY()));
+		double nume_a = ((otherEndPosition.getX() - otherStartPosition.getX()) * (start.getPosition().getY() - otherStartPosition.getY())) - ((otherEndPosition.getY() - otherStartPosition.getY()) * (start.getPosition().getX() - otherStartPosition.getX()));
+		double ua = nume_a / denom;
+		double x = start.getPosition().getX() + ua * (end.getPosition().getX() - start.getPosition().getX());
+		double y = start.getPosition().getY() + ua * (end.getPosition().getY() - start.getPosition().getY());
+		return new Vector2d(x, y);
 	}
 }
