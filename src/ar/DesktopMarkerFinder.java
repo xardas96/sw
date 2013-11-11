@@ -124,23 +124,21 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		segments = findLinesWithCorners(image, segments);
 		List<Marker> markers = new ArrayList<Marker>();
 		do {
-			LineSegment chainSegment = segments.get(0);
-			segments.set(0, segments.get(segments.size() - 1));
-			segments.remove(segments.size() - 1);
+			LineSegment chainSegment = segments.remove(0);
 			List<LineSegment> chain = new ArrayList<LineSegment>();
 			int length = 1;
 			findChainOfLines(chainSegment, true, segments, chain, length);
 			chain.add(chainSegment);
-			if (length < 4) {
+			if (chain.size() < 4) {
 				findChainOfLines(chainSegment, false, segments, chain, length);
 			}
-			if (length > 2) {
+			if (chain.size() > 2) {
 				Marker marker = new Marker();
 				marker.setChain(chain);
+				System.out.println(chain);
 				marker.reconstructCorners();
 				markers.add(marker);
 			}
-			System.out.println(chain);
 		} while (!segments.isEmpty());
 		return markers;
 	}
@@ -159,16 +157,16 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				List<LineSegment> lineSegments;
 				if (regionEdgels.size() > EDGELS_ONLINE) {
 					lineSegments = findLineSegments(regionEdgels);
-//					mergeLineSegments(image, lineSegments);
+					mergeLineSegments(image, lineSegments);
 					segments.addAll(lineSegments);
 				}
 			}
 		}
-//		System.out.println("Przed:" + segments.size());
-//		mergeLineSegments(image, segments);
-//		System.out.println("Po: " + segments.size());
-//		extendLines(image, segments);
-//		segments = findLinesWithCorners(image, segments);
+		System.out.println("Przed:" + segments.size());
+		mergeLineSegments(image, segments);
+		System.out.println("Po: " + segments.size());
+		extendLines(image, segments);
+		segments = findLinesWithCorners(image, segments);
 		return segments;
 	}
 	
@@ -200,8 +198,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			if (isFound) {
 				length++;
 				LineSegment chainSegment = segment;
-				lineSegments.set(i, lineSegments.get(lineSegments.size() - 1));
-				lineSegments.remove(lineSegments.size() - 1);
+				lineSegments.remove(segment);
 				if (length == 4) {
 					chain.add(chainSegment);
 				} else {
@@ -221,8 +218,8 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		List<LineSegment> linesWithCorners = new ArrayList<LineSegment>();
 		for (LineSegment segment : segments) {
 			int[] composites = null;
-			int dx = (int) (segment.getDirection().getX() * 4);
-			int dy = (int) (segment.getDirection().getY() * 4);
+			int dx = (int) Math.round(segment.getDirection().getX() * 4.0f);
+			int dy = (int) Math.round(segment.getDirection().getY() * 4.0f);
 			int x = segment.getStart().getX() - dx;
 			int y = segment.getEnd().getY() - dy;
 			if (imageContains(image, x, y)) {
@@ -234,9 +231,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			x = segment.getEnd().getX() + dx;
 			y = segment.getEnd().getY() + dy;
 			if (imageContains(image, x, y)) {
-				if (composites == null) {
-					composites = getRGBComposites(image, x, y);
-				}
+				composites = getRGBComposites(image, x, y);
 				if (composites[0] > WHITETRESHOLD && composites[1] > WHITETRESHOLD && composites[2] > WHITETRESHOLD) {
 					segment.setEndCorner(true);
 				}
@@ -244,7 +239,6 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			if (segment.isStartCorner() || segment.isEndCorner()) {
 				linesWithCorners.add(segment);
 			}
-
 		}
 		return linesWithCorners;
 	}

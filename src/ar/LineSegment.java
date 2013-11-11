@@ -94,6 +94,11 @@ public class LineSegment {
 	public boolean isEndCorner() {
 		return endCorner;
 	}
+	
+	@Override
+	public String toString() {
+		return "Line segment start: " + start.toString() + " stop: " + end.toString();
+	}
 
 	public boolean isOrientationCompatible(LineSegment segment) {
 		return Vector2d.dot(direction, segment.direction) > 0.92f;

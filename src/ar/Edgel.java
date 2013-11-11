@@ -9,7 +9,7 @@ public class Edgel {
 	}
 	
 	public int getX() {
-		return (int) position.getX();
+		return (int) Math.round(position.getX());
 	}
 
 	public int getY() {
