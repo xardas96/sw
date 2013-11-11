@@ -193,7 +193,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			}
 			if (isFound) {
 				double orientation = startSegment.getDirection().getX() * segment.getDirection().getY() - startSegment.getDirection().getY() * segment.getDirection().getX();
-				isFound &= !(atStartPoint && orientation > 0 || atStartPoint && orientation < 0);
+				isFound &= !(atStartPoint && orientation <= 0 || !atStartPoint && orientation >= 0);
 			}
 			if (isFound) {
 				length++;
