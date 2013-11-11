@@ -375,7 +375,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				double u1 = 0;
 				double u2 = 50000;
 				Vector2d direction = lineSegmentInRun.getStart().getPosition().subtract(lineSegmentInRun.getEnd().getPosition());
-				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getDirection().getY(), lineSegmentInRun.getStart().getDirection().getX());
+				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getDirection().getX(), lineSegmentInRun.getStart().getDirection().getY());
 				if (Math.abs(direction.getX()) <= Math.abs(direction.getY())) {
 					for (Edgel edgel : lineSegmentInRun.getSupportingEdgels()) {
 						if (edgel.getY() > u1) {
@@ -400,7 +400,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 					}
 				}
 				double dot = Vector2d.dot(lineSegmentInRun.getEnd().getPosition().subtract(lineSegmentInRun.getStart().getPosition()), orientation);
-				if (dot < 0.0f) {
+				if (dot < 0.0) {
 					lineSegmentInRun.swapEndpoints();
 				}
 				Vector2d newDirection = lineSegmentInRun.getEnd().getPosition().subtract(lineSegmentInRun.getStart().getPosition());
