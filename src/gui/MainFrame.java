@@ -11,12 +11,13 @@ public class MainFrame extends JFrame {
 	
 	private DrawPanel panel;
 	
-	public MainFrame(Image image){
+	public MainFrame(Image image, String title){
 		panel = new DrawPanel(image);
 		JScrollPane pane= new JScrollPane(panel);
 		//add(panel);
 		add(pane);
 		setSize(new Dimension(700, 700));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle(title);
 	}
 }

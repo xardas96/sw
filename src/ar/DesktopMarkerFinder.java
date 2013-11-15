@@ -17,10 +17,10 @@ import javax.imageio.ImageIO;
 
 public class DesktopMarkerFinder implements MarkerFinder {
 	private Random random;
-
+	
 	public DesktopMarkerFinder() {
 		// ¿eby by³o szybiej, jako pole w klasie tworzone raz
-		random = new Random(); 
+		random = new Random();
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				List<LineSegment> lineSegments;
 				if (regionEdgels.size() > EDGELS_ONLINE) {
 					lineSegments = findLineSegments(regionEdgels);
-					mergeLineSegments(image, lineSegments);
+				mergeLineSegments(image, lineSegments);
 					segments.addAll(lineSegments);
 				}
 			}
