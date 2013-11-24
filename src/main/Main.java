@@ -16,8 +16,8 @@ import ar.DesktopMarkerFinder;
 public class Main {
 
 	public static void main(String[] args) throws Exception {
-		InputStream is = new FileInputStream("fixedTest.png");
-		InputStream is2 = new FileInputStream("fixedTest.png");
+		InputStream is = new FileInputStream("londonTest.jpeg");
+		InputStream is2 = new FileInputStream("londonTest.jpeg");
 		DesktopMarkerFinder finder = new DesktopMarkerFinder();
 //		Image im = finder.drawEdgels(is);
 //		Image im = finder.drawLineSegments(is);

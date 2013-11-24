@@ -34,7 +34,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		long startTime = System.currentTimeMillis();
 		List<Edgel> edgels = findMarkers(image);
 		long stopTime = System.currentTimeMillis();
-		System.out.println("Czas znajdowania edgelsów: " + (stopTime - startTime));
+		System.out.println("Czas znajdowania Edgelsów: " + (stopTime - startTime));
 		Graphics2D g = image.createGraphics();
 		System.out.println(edgels.size());
 		for (Edgel edgel : edgels) {
@@ -130,11 +130,12 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			findChainOfLines(chainSegment, true, segments, chain, length);
 			chain.add(chainSegment);
 			if (chain.size() < 4) {
-				findChainOfLines(chainSegment, false, segments, chain, chain.size());
+				findChainOfLines(chainSegment, false, segments, chain, length);
 			}
 			if (chain.size() > 2) {
 				Marker marker = new Marker();
 				marker.setChain(chain);
+				System.out.println(chain);
 				marker.reconstructCorners();
 				markers.add(marker);
 			}
@@ -156,7 +157,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				List<LineSegment> lineSegments;
 				if (regionEdgels.size() > EDGELS_ONLINE) {
 					lineSegments = findLineSegments(regionEdgels);
-					mergeLineSegments(image, lineSegments);
+				mergeLineSegments(image, lineSegments);
 					segments.addAll(lineSegments);
 				}
 			}
