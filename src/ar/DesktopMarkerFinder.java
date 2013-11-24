@@ -130,12 +130,11 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			findChainOfLines(chainSegment, true, segments, chain, length);
 			chain.add(chainSegment);
 			if (chain.size() < 4) {
-				findChainOfLines(chainSegment, false, segments, chain, length);
+				findChainOfLines(chainSegment, false, segments, chain, chain.size());
 			}
 			if (chain.size() > 2) {
 				Marker marker = new Marker();
 				marker.setChain(chain);
-				System.out.println(chain);
 				marker.reconstructCorners();
 				markers.add(marker);
 			}
@@ -157,7 +156,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				List<LineSegment> lineSegments;
 				if (regionEdgels.size() > EDGELS_ONLINE) {
 					lineSegments = findLineSegments(regionEdgels);
-				mergeLineSegments(image, lineSegments);
+					mergeLineSegments(image, lineSegments);
 					segments.addAll(lineSegments);
 				}
 			}
