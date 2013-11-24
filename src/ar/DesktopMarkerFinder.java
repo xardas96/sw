@@ -34,7 +34,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		long startTime = System.currentTimeMillis();
 		List<Edgel> edgels = findMarkers(image);
 		long stopTime = System.currentTimeMillis();
-		System.out.println("Czas znajdowania Edgelsów: " + (stopTime - startTime));
+		System.out.println("Czas znajdowania edgelsów: " + (stopTime - startTime));
 		Graphics2D g = image.createGraphics();
 		System.out.println(edgels.size());
 		for (Edgel edgel : edgels) {
