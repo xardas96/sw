@@ -61,10 +61,10 @@ public class LineSegment {
 	public boolean isInLine(Edgel edgel) {
 		boolean isCompatible = start.isOrientationCompatible(edgel);
 		if (isCompatible) {
-			int cross = (end.getX() - start.getX()) * (edgel.getY() - start.getY());
+			double cross = (end.getX() - start.getX()) * (edgel.getY() - start.getY());
 			cross -= (end.getY() - start.getY()) * (edgel.getX() - start.getX());
-			int d1 = start.getX() - end.getX();
-			int d2 = start.getY() - end.getY();
+			double d1 = start.getX() - end.getX();
+			double d2 = start.getY() - end.getY();
 			float distance = (float) (cross / new Vector2d(d1, d2).getLength());
 			isCompatible &= Math.abs(distance) < 0.75f;
 		}
@@ -94,7 +94,7 @@ public class LineSegment {
 	public boolean isEndCorner() {
 		return endCorner;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Line segment start: " + start.toString() + " stop: " + end.toString();
@@ -105,13 +105,11 @@ public class LineSegment {
 	}
 
 	public Vector2d getIntersection(LineSegment segment) {
-		Vector2d otherStartPosition = segment.start.getPosition();
-		Vector2d otherEndPosition = segment.end.getPosition();
-		double denom = ((otherEndPosition.getY() - otherStartPosition.getY()) * (end.getX() - start.getX())) - ((otherEndPosition.getX() - otherStartPosition.getX()) * (end.getY() - start.getY()));
-		double nume_a = ((otherEndPosition.getX() - otherStartPosition.getX()) * (start.getY() - otherStartPosition.getY())) - ((otherEndPosition.getY() - otherStartPosition.getY()) * (start.getX() - otherStartPosition.getX()));
+		double denom = ((segment.end.getPosition().getY() - segment.start.getPosition().getY()) * (end.getPosition().getX() - start.getPosition().getX())) - ((segment.end.getPosition().getX() - segment.start.getPosition().getX()) * (end.getPosition().getY() - start.getPosition().getY()));
+		double nume_a = ((segment.end.getPosition().getX() - segment.start.getPosition().getX()) * (start.getPosition().getY() - segment.start.getPosition().getY())) - ((segment.end.getPosition().getY() - segment.start.getPosition().getY()) * (start.getPosition().getX() - segment.start.getPosition().getX()));
 		double ua = nume_a / denom;
-		double x = start.getX() + ua * (end.getX() - start.getX());
-		double y = start.getY() + ua * (end.getY() - start.getY());
-		return new Vector2d(x, y);
+		double x = start.getPosition().getX() + ua * (end.getPosition().getX() - start.getPosition().getX());
+		double y = start.getPosition().getY() + ua * (end.getPosition().getY() - start.getPosition().getY());
+		return new Vector2d(x, Math.abs(y));
 	}
 }

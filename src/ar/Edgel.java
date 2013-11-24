@@ -8,12 +8,12 @@ public class Edgel {
 		position = new Vector2d(x, y);
 	}
 	
-	public int getX() {
-		return (int) Math.round(position.getX());
+	public double getX() {
+		return position.getX();
 	}
 
-	public int getY() {
-		return (int) position.getY();
+	public double getY() {
+		return position.getY();
 	}
 	
 	public Vector2d getPosition() {
