@@ -67,12 +67,31 @@ public class DesktopMarkerFinder implements MarkerFinder {
 
 	public Image drawMarkers(InputStream is) throws IOException {
 		BufferedImage image = ImageIO.read(is);
-		long startTime = System.currentTimeMillis();
+//		long startTime = System.currentTimeMillis();
 		List<Marker> markers = findMarkersFinal(image);
-		long stopTime = System.currentTimeMillis();
-		System.out.println("czas markerow: " + (stopTime - startTime));
+//		long stopTime = System.currentTimeMillis();
+//		System.out.println("czas markerow: " + (stopTime - startTime));
 		Graphics2D g = image.createGraphics();
-		System.out.println(markers.size());
+//		System.out.println(markers.size());
+		for (Marker marker : markers) {
+			g.setColor(Color.YELLOW);
+			g.setStroke(new BasicStroke(2.0f));
+			g.drawLine((int) marker.getCorner1().getX(), (int) marker.getCorner1().getY(), (int) marker.getCorner2().getX(), (int) marker.getCorner2().getY());
+			g.drawLine((int) marker.getCorner2().getX(), (int) marker.getCorner2().getY(), (int) marker.getCorner3().getX(), (int) marker.getCorner3().getY());
+			g.drawLine((int) marker.getCorner3().getX(), (int) marker.getCorner3().getY(), (int) marker.getCorner4().getX(), (int) marker.getCorner4().getY());
+			g.drawLine((int) marker.getCorner4().getX(), (int) marker.getCorner4().getY(), (int) marker.getCorner1().getX(), (int) marker.getCorner1().getY());
+		}
+		return image;
+	}
+	
+	public Image drawMarkers(BufferedImage image) {
+//		BufferedImage image = ImageIO.read(is);
+//		long startTime = System.currentTimeMillis();
+		List<Marker> markers = findMarkersFinal(image);
+//		long stopTime = System.currentTimeMillis();
+//		System.out.println("czas markerow: " + (stopTime - startTime));
+		Graphics2D g = image.createGraphics();
+//		System.out.println(markers.size());
 		for (Marker marker : markers) {
 			g.setColor(Color.YELLOW);
 			g.setStroke(new BasicStroke(2.0f));
@@ -123,23 +142,25 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		extendLines(image, segments);
 		segments = findLinesWithCorners(image, segments);
 		List<Marker> markers = new ArrayList<Marker>();
-		do {
-			LineSegment chainSegment = segments.remove(0);
-			List<LineSegment> chain = new ArrayList<LineSegment>();
-			int length = 1;
-			findChainOfLines(chainSegment, true, segments, chain, length);
-			chain.add(chainSegment);
-			if (chain.size() < 4) {
-				findChainOfLines(chainSegment, false, segments, chain, length);
-			}
-			if (chain.size() > 2) {
-				Marker marker = new Marker();
-				marker.setChain(chain);
-				System.out.println(chain);
-				marker.reconstructCorners();
-				markers.add(marker);
-			}
-		} while (!segments.isEmpty());
+		if(!segments.isEmpty()) {
+			do {
+				LineSegment chainSegment = segments.remove(0);
+				List<LineSegment> chain = new ArrayList<LineSegment>();
+				int length = 1;
+				findChainOfLines(chainSegment, true, segments, chain, length);
+				chain.add(chainSegment);
+				if (chain.size() < 4) {
+					findChainOfLines(chainSegment, false, segments, chain, length);
+				}
+				if (chain.size() > 2) {
+					Marker marker = new Marker();
+					marker.setChain(chain);
+//					System.out.println(chain);
+					marker.reconstructCorners();
+					markers.add(marker);
+				}
+			} while (!segments.isEmpty());
+		}
 		return markers;
 	}
 
