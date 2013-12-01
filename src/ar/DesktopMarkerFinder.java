@@ -207,7 +207,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		mergeLineSegments(image, segments);
 //		System.out.println("Po: " + segments.size());
 		extendLines(image, segments);
-		segments = findLinesWithCorners(image, segments);
+		//segments = findLinesWithCorners(image, segments);
 		return segments;
 	}
 	
@@ -364,10 +364,10 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			merge |= imageContains(image, x, y) && applyEdgeKernelY(image, x, y) >= TRESHOLD / 2;
 			if (merge) {
 				merge = imageContains(image, x, y) && Vector2d.dot(calculateSobel(image, x, y), gradient) > 0.38; // zmienna
-				if(merge) {
+				if(!merge) {
 				merge |= imageContains(image, xPlusNorm, yPlusNorm) && Vector2d.dot(calculateSobel(image, xPlusNorm, yPlusNorm), gradient) > 0.38;
 				}
-				if(merge) {
+				if(!merge) {
 				merge |= imageContains(image, xMinusNorm, yMinusNorm) && Vector2d.dot(calculateSobel(image, xMinusNorm, yMinusNorm), gradient) > 0.38;
 				}
 			}
