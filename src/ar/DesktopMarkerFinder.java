@@ -414,7 +414,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				double u1 = 0;
 				double u2 = 50000;
 				Vector2d direction = lineSegmentInRun.getStart().getPosition().subtract(lineSegmentInRun.getEnd().getPosition());
-				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getDirection().getX(), lineSegmentInRun.getStart().getDirection().getY());
+				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getDirection().getY(), lineSegmentInRun.getStart().getDirection().getX());
 				if (Math.abs(direction.getX()) <= Math.abs(direction.getY())) {
 					for (Edgel edgel : lineSegmentInRun.getSupportingEdgels()) {
 						if (edgel.getY() > u1) {
@@ -575,7 +575,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		gy += 2 * getRGBComposite(image, x - 1, y, RED_SHIFT);
 		gy += getRGBComposite(image, x - 1, y + 1, RED_SHIFT);
 		gy -= getRGBComposite(image, x + 1, y - 1, RED_SHIFT);
-		gy -= getRGBComposite(image, x + 1, y, RED_SHIFT);
+		gy -= 2* getRGBComposite(image, x + 1, y, RED_SHIFT);
 		gy -= getRGBComposite(image, x + 1, y + 1, RED_SHIFT);
 		Vector2d vec = new Vector2d(gx, gy);
 		vec.normalize();
