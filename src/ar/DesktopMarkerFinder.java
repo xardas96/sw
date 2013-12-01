@@ -489,8 +489,9 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				else
 					edgeValue = 0;
 				if (prevEdgeValue > 0 && prevEdgeValue > prevEdgeValue2 && prevEdgeValue > edgeValue) {
-					Edgel edgel = new Edgel(left + x - 1, top + y);
-					edgel.setDirection(calculateSobel(image, (int) Math.round(edgel.getX()), (int) Math.round(edgel.getY())));
+					Edgel edgel = new Edgel(left + x, top + y-1);
+					
+					edgel.setDirection(calculateSobel(image, (int) edgel.getX(), (int) edgel.getY()));
 					foundEdgels.add(edgel);
 				}
 				prevEdgeValue2 = prevEdgeValue;
@@ -548,35 +549,38 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	}
 
 	private int applyEdgeKernelX(BufferedImage image, int x, int y) {
-		int value = FILTER_VECTOR[0] * getRGBComposite(image, x, y - 2, RED_SHIFT);
-		value += FILTER_VECTOR[1] * getRGBComposite(image, x, y - 1, RED_SHIFT);
-		value += FILTER_VECTOR[3] * getRGBComposite(image, x, y + 1, RED_SHIFT);
-		value += FILTER_VECTOR[4] * getRGBComposite(image, x, y + 2, RED_SHIFT);
+		int shift = BLUE_SHIFT;
+		int value = FILTER_VECTOR[0] * getRGBComposite(image, x, y - 2, shift);
+		value += FILTER_VECTOR[1] * getRGBComposite(image, x, y - 1, shift);
+		value += FILTER_VECTOR[3] * getRGBComposite(image, x, y + 1, shift);
+		value += FILTER_VECTOR[4] * getRGBComposite(image, x, y + 2, shift);
 		return Math.abs(value);
 	}
 
 	private int applyEdgeKernelY(BufferedImage image, int x, int y) {
-		int value = FILTER_VECTOR[0] * getRGBComposite(image, x - 2, y, RED_SHIFT);
-		value += FILTER_VECTOR[1] * getRGBComposite(image, x - 1, y, RED_SHIFT);
-		value += FILTER_VECTOR[3] * getRGBComposite(image, x + 1, y, RED_SHIFT);
-		value += FILTER_VECTOR[4] * getRGBComposite(image, x + 2, y, RED_SHIFT);
+		int shift = BLUE_SHIFT;
+		int value = FILTER_VECTOR[0] * getRGBComposite(image, x - 2, y, shift);
+		value += FILTER_VECTOR[1] * getRGBComposite(image, x - 1, y, shift);
+		value += FILTER_VECTOR[3] * getRGBComposite(image, x + 1, y, shift);
+		value += FILTER_VECTOR[4] * getRGBComposite(image, x + 2, y, shift);
 		return Math.abs(value);
 	}
 
 	private Vector2d calculateSobel(BufferedImage image, int x, int y) {
-		int gx = getRGBComposite(image, x - 1, y - 1, RED_SHIFT);
-		gx += 2 * getRGBComposite(image, x, y - 1, RED_SHIFT);
-		gx += getRGBComposite(image, x + 1, y - 1, RED_SHIFT);
-		gx -= getRGBComposite(image, x - 1, y + 1, RED_SHIFT);
-		gx -= 2 * getRGBComposite(image, x, y + 1, RED_SHIFT);
-		gx -= getRGBComposite(image, x + 1, y + 1, RED_SHIFT);
+		int shift = BLUE_SHIFT;
+		int gx = getRGBComposite(image, x - 1, y - 1, shift);
+		gx += 2 * getRGBComposite(image, x, y - 1, shift);
+		gx += getRGBComposite(image, x + 1, y - 1, shift);
+		gx -= getRGBComposite(image, x - 1, y + 1, shift);
+		gx -= 2 * getRGBComposite(image, x, y + 1, shift);
+		gx -= getRGBComposite(image, x + 1, y + 1, shift);
 
-		int gy = getRGBComposite(image, x - 1, y - 1, RED_SHIFT);
-		gy += 2 * getRGBComposite(image, x - 1, y, RED_SHIFT);
-		gy += getRGBComposite(image, x - 1, y + 1, RED_SHIFT);
-		gy -= getRGBComposite(image, x + 1, y - 1, RED_SHIFT);
-		gy -= 2* getRGBComposite(image, x + 1, y, RED_SHIFT);
-		gy -= getRGBComposite(image, x + 1, y + 1, RED_SHIFT);
+		int gy = getRGBComposite(image, x - 1, y - 1, shift);
+		gy += 2 * getRGBComposite(image, x - 1, y, shift);
+		gy += getRGBComposite(image, x - 1, y + 1, shift);
+		gy -= getRGBComposite(image, x + 1, y - 1, shift);
+		gy -= 2* getRGBComposite(image, x + 1, y, shift);
+		gy -= getRGBComposite(image, x + 1, y + 1, shift);
 		Vector2d vec = new Vector2d(gx, gy);
 		vec.normalize();
 		return vec;
