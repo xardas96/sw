@@ -60,7 +60,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			if (segment.isEndCorner()) {
 				g.drawLine((int)segment.getEnd().getX(), (int)segment.getEnd().getY(), (int)segment.getEnd().getX(), (int)segment.getEnd().getY());
 			}
-			drawArrow(image, (int)segment.getStart().getX(), (int)segment.getStart().getY(), (int)segment.getEnd().getX(), (int)segment.getEnd().getY(), (int)segment.getDirection().getX(), (int)segment.getDirection().getY());
+			drawArrow(image, (int)segment.getStart().getX(), (int)segment.getStart().getY(), (int)segment.getEnd().getX(), (int)segment.getEnd().getY(), segment.getDirection().getX(), segment.getDirection().getY());
 		}
 		return image;
 	}
@@ -80,7 +80,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			if (segment.isEndCorner()) {
 				g.drawLine((int)segment.getEnd().getX(), (int)segment.getEnd().getY(), (int)segment.getEnd().getX(), (int)segment.getEnd().getY());
 			}
-			drawArrow(image, (int)segment.getStart().getX(), (int)segment.getStart().getY(), (int)segment.getEnd().getX(), (int)segment.getEnd().getY(), (int)segment.getDirection().getX(), (int)segment.getDirection().getY());
+			drawArrow(image, (int)segment.getStart().getX(), (int)segment.getStart().getY(), (int)segment.getEnd().getX(), (int)segment.getEnd().getY(), segment.getDirection().getX(), segment.getDirection().getY());
 		}
 		return image;
 	}
@@ -203,9 +203,9 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				}
 			}
 		}
-		System.out.println("Przed:" + segments.size());
+//		System.out.println("Przed:" + segments.size());
 		mergeLineSegments(image, segments);
-		System.out.println("Po: " + segments.size());
+//		System.out.println("Po: " + segments.size());
 		extendLines(image, segments);
 		segments = findLinesWithCorners(image, segments);
 		return segments;
@@ -259,18 +259,18 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		List<LineSegment> linesWithCorners = new ArrayList<LineSegment>();
 		for (LineSegment segment : segments) {
 			int[] composites = null;
-			double dx = segment.getDirection().getX() * 4.0;
-			double dy = segment.getDirection().getY() * 4.0;
-			int x = (int) Math.round(segment.getStart().getX() - dx);
-			int y = (int) Math.round(segment.getEnd().getY() - dy);
+			int dx = (int)(segment.getDirection().getX() * 4.0);
+			int dy = (int)(segment.getDirection().getY() * 4.0);
+			int x = (int) segment.getStart().getX() - dx;
+			int y = (int) segment.getEnd().getY() - dy;
 			if (imageContains(image, x, y)) {
 				composites = getRGBComposites(image, x, y);
 				if (composites[0] > WHITETRESHOLD && composites[1] > WHITETRESHOLD && composites[2] > WHITETRESHOLD) {
 					segment.setStartCorner(true);
 				}
 			}
-			x = (int) Math.round(segment.getEnd().getX() + dx);
-			y = (int) Math.round(segment.getEnd().getY() + dy);
+			x = (int)segment.getEnd().getX() + dx;
+			y = (int) segment.getEnd().getY() + dy;
 			if (imageContains(image, x, y)) {
 				composites = getRGBComposites(image, x, y);
 				if (composites[0] > WHITETRESHOLD && composites[1] > WHITETRESHOLD && composites[2] > WHITETRESHOLD) {
@@ -414,7 +414,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				double u1 = 0;
 				double u2 = 50000;
 				Vector2d direction = lineSegmentInRun.getStart().getPosition().subtract(lineSegmentInRun.getEnd().getPosition());
-				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getDirection().getY(), lineSegmentInRun.getStart().getDirection().getX());
+				Vector2d orientation = new Vector2d(-lineSegmentInRun.getStart().getDirection().getX(), lineSegmentInRun.getStart().getDirection().getY());
 				if (Math.abs(direction.getX()) <= Math.abs(direction.getY())) {
 					for (Edgel edgel : lineSegmentInRun.getSupportingEdgels()) {
 						if (edgel.getY() > u1) {
