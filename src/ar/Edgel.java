@@ -29,7 +29,7 @@ public class Edgel {
 	}
 	
 	public boolean isOrientationCompatible(Edgel edgel) {
-		return Vector2d.dot(direction, edgel.direction) > 0.38f;
+		return Vector2d.dot(direction, edgel.direction) > 0.38;
 	}
 
 	public String toString() {

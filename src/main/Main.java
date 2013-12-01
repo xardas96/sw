@@ -89,7 +89,7 @@ public class Main {
 		
 		timer.start();
 		while (true) {
-			Image im = finder.drawMarkers(webcam.getImage());
+			Image im = finder.drawLineSegments(webcam.getImage());
 			mf.setImage(im);
 		}
 	}

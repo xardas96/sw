@@ -66,7 +66,7 @@ public class LineSegment {
 			double d1 = start.getX() - end.getX();
 			double d2 = start.getY() - end.getY();
 			float distance = (float) (cross / new Vector2d(d1, d2).getLength());
-			isCompatible &= Math.abs(distance) < 0.75f;
+			isCompatible &= Math.abs(distance) < 0.75;
 		}
 		return isCompatible;
 	}
@@ -101,7 +101,7 @@ public class LineSegment {
 	}
 
 	public boolean isOrientationCompatible(LineSegment segment) {
-		return Vector2d.dot(direction, segment.direction) > 0.92f;
+		return Vector2d.dot(direction, segment.direction) > 0.92;
 	}
 
 	public Vector2d getIntersection(LineSegment segment) {
