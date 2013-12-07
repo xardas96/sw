@@ -139,7 +139,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		return edgels;
 	}
 
-	private List<Marker> findMarkersFinal(BufferedImage image) {
+	public List<Marker> findMarkersFinal(BufferedImage image) {
 		List<Edgel> edgels = new ArrayList<Edgel>();
 		List<LineSegment> segments = new ArrayList<LineSegment>();
 		int height = image.getHeight();

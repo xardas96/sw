@@ -8,6 +8,17 @@ public class Marker {
 	private Vector2d corner2;
 	private Vector2d corner3;
 	private Vector2d corner4;
+	
+	public Marker(){
+		
+	}
+	
+	public Marker(Vector2d c1,Vector2d c2,Vector2d c3,Vector2d c4){
+		corner1 = c1;
+		corner2 = c2;
+		corner3 = c3;
+		corner4 = c4;
+	}
 
 	public void setChain(List<LineSegment> chain) {
 		this.chain = chain;
