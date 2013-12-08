@@ -39,7 +39,6 @@ public class PerspectiveFinder {
 										{0,0,0,c4.getX(), c4.getY(),1,-c4.getX()*height,-c4.getY()*height}};
 		Matrix bigM = new Matrix(big);
 		Matrix small = new Matrix(new double[][]{{0},{width},{width},{0}, {0}, {0},{height}, {height}});
-		//Matrix small = new Matrix(new double[][]{{0,0,width,width, 0, height, 0, height}});
 		bigM = bigM.inverse();
 		Matrix res = bigM.times(small);
 		res = new Matrix(new double[][]{{res.get(0, 0), res.get(1, 0), res.get(2, 0)}, 
