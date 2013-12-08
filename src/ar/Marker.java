@@ -81,7 +81,21 @@ public class Marker {
 						List<Vector2d> sCorners = sortCornersByLengthTo(new Vector2d[]{m1.corner1, m1.corner2, m1.corner3, m1.corner4}, m2.getCorner1());
 						m1.corner1 = sCorners.get(sCorners.size()-1);
 						m1.corner3 = sCorners.get(0);
-						//TODO corner 2 and 4
+						Vector2d center = m1.corner1.add(m1.corner3);
+						center.divide(2);
+						Vector2d c_c1 = m1.corner1.subtract(center);
+						c_c1.normalize();
+						Vector2d c_v1 = sCorners.get(1).subtract(center);
+						c_v1.normalize();
+						double dot = Vector2d.dot(c_c1, c_v1);
+						if(dot>=0){
+							m1.corner2 = sCorners.get(1);
+							m1.corner4 = sCorners.get(2);
+						}
+						else{
+							m1.corner2 = sCorners.get(2);
+							m1.corner4 = sCorners.get(1);
+						}
 						found = true;
 						markers.remove(m1);
 						markers.remove(m2);
@@ -110,8 +124,8 @@ public class Marker {
 				list.add(corners[i]);
 			}
 			else{
-				lengths.set(index, l);
-				list.set(index,corners[i]);
+				lengths.add(index, l);
+				list.add(index,corners[i]);
 			}
 		}
 		return list;

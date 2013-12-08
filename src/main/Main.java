@@ -31,7 +31,7 @@ public class Main {
 		// testMarkerFinder("fixedTest.png");
 		//testCamera(new Dimension(320,240));
 		//testMarkerPerspective("testowy.jpg");
-		testMarkerPerspective("fixedTest.png");
+		testMarkerPerspective("rotTest.png");
 	}
 
 	private static void testMarkerFinder(String fileName) throws Exception {
@@ -105,6 +105,7 @@ public class Main {
 		BufferedImage image = ImageIO.read(is);
 		DesktopMarkerFinder finder = new DesktopMarkerFinder();
 		List<Marker> markers = finder.findMarkersFinal(image);
+		markers = Marker.setMarkerOrinetation(markers);
 		if(!markers.isEmpty()){
 			Marker marker = markers.get(0);
 			PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
