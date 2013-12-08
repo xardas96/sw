@@ -1,5 +1,6 @@
 package ar;
 
+import java.awt.Dimension;
 import java.io.InputStream;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public interface MarkerFinder {
 	public static final int BLUE_SHIFT = 0;
 	public static final int EDGELS_ONLINE = 5;
 	public static final int WHITETRESHOLD = 10;
+	public static final Dimension MARKER_DIMENSION = new Dimension(500, 500);
 
 	public List<Marker> readImage(InputStream is) throws Exception;
 }
