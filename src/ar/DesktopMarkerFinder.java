@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 
 public class DesktopMarkerFinder implements MarkerFinder {
 	private Random random;
+	private List<Marker> markers;
 
 	public DesktopMarkerFinder() {
 		// ¿eby by³o szybiej, jako pole w klasie tworzone raz
@@ -88,7 +89,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	public Image drawMarkers(InputStream is) throws IOException {
 		BufferedImage image = ImageIO.read(is);
 		// long startTime = System.currentTimeMillis();
-		List<Marker> markers = findMarkersFinal(image);
+		markers = findMarkersFinal(image);
 		// long stopTime = System.currentTimeMillis();
 		// System.out.println("czas markerow: " + (stopTime - startTime));
 		Graphics2D g = image.createGraphics();
@@ -104,10 +105,14 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		return image;
 	}
 
+	public List<Marker> getMarkers() {
+		return markers;
+	}
+
 	public Image drawMarkers(BufferedImage image) {
 		// BufferedImage image = ImageIO.read(is);
 		// long startTime = System.currentTimeMillis();
-		List<Marker> markers = findMarkersFinal(image);
+		markers = findMarkersFinal(image);
 		// long stopTime = System.currentTimeMillis();
 		// System.out.println("czas markerow: " + (stopTime - startTime));
 		Graphics2D g = image.createGraphics();

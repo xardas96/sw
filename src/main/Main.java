@@ -29,9 +29,9 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		// testMarkerFinder("fixedTest.png");
-		//testCamera(new Dimension(320,240));
-		//testMarkerPerspective("testowy.jpg");
-		testMarkerPerspective("rotTest.png");
+		 testCamera(new Dimension(320,240));
+		// testMarkerPerspective("testowy.jpg");
+//		testMarkerPerspective("rotTest.png");
 	}
 
 	private static void testMarkerFinder(String fileName) throws Exception {
@@ -84,29 +84,48 @@ public class Main {
 				mf.setVisible(true);
 			}
 		});
-		
+
 		Timer timer = new Timer(1000, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				mf.setFPS();
 			}
 		});
-		
+
+		final MainFrame mf2 = new MainFrame(null, "Marker");
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				mf2.setVisible(true);
+			}
+		});
+
 		timer.start();
 		while (true) {
-			Image im = finder.drawMarkers(webcam.getImage());
-			//Image im = finder.drawLineSegments(webcam.getImage());
+			BufferedImage img = webcam.getImage();
+			Image im = finder.drawMarkers(img);
 			mf.setImage(im);
+			List<Marker> markers = finder.getMarkers();
+			if (markers != null && !markers.isEmpty()) {
+				markers = Marker.setMarkerOrinetation(markers);
+				if(!markers.isEmpty()) {
+				Marker marker = markers.get(0);
+				PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
+				Matrix m = pFinder.findPerspectiveMatrix(marker);
+				BufferedImage markerImage = pFinder.transformBufferedImage(m, img, MarkerFinder.MARKER_DIMENSION);
+				mf2.setImage(markerImage);
+				}
+			}
 		}
 	}
-	
-	private static void testMarkerPerspective(String test) throws IOException{
+
+	private static void testMarkerPerspective(String test) throws IOException {
 		InputStream is = new FileInputStream(test);
 		BufferedImage image = ImageIO.read(is);
 		DesktopMarkerFinder finder = new DesktopMarkerFinder();
 		List<Marker> markers = finder.findMarkersFinal(image);
 		markers = Marker.setMarkerOrinetation(markers);
-		if(!markers.isEmpty()){
+		if (!markers.isEmpty()) {
 			Marker marker = markers.get(0);
 			PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
 			Matrix m = pFinder.findPerspectiveMatrix(marker);
@@ -119,6 +138,6 @@ public class Main {
 				}
 			});
 		}
-		
+
 	}
 }

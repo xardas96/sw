@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 
@@ -17,10 +16,11 @@ public class DrawPanel extends JPanel {
 	}
 
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-		g.drawImage(image, 0, 0, null);
-		setPreferredSize(new Dimension(image.getWidth(null), image.getHeight(null)));
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		if (image != null) {
+			g.drawImage(image, 0, 0, null);
+		}
 	}
 
 	public void setImage(Image image) {
