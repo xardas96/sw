@@ -65,6 +65,10 @@ public class Vector2d {
 	public static double dot(Vector2d v1, Vector2d v2) {
 		return v1.x * v2.x + v1.y * v2.y;
 	}
+	
+	public static double cross(Vector2d v1, Vector2d v2){
+		return v1.getX()*v2.getY()-v2.getX()*v1.getY();
+	}
 
 	public Vector2d negate() {
 		return new Vector2d(-x, -y);

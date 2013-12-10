@@ -1,7 +1,10 @@
 package ar;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
 
 public class Marker {
 	private List<LineSegment> chain;
@@ -78,24 +81,19 @@ public class Marker {
 					Marker m1 = markers.get(i);
 					Marker m2 = markers.get(j);
 					if(isInside(m1, m2)){
-						List<Vector2d> sCorners = sortCornersByLengthTo(new Vector2d[]{m1.corner1, m1.corner2, m1.corner3, m1.corner4}, m2.getCorner1());
-						m1.corner1 = sCorners.get(sCorners.size()-1);
+						Vector2d center = m1.corner1.add(m1.corner3).add(m1.corner2).add(m1.corner4);
+						center.divide(4);
+						Vector2d littleCenter = m2.corner1.add(m2.corner3).add(m2.corner2).add(m2.corner4);
+						littleCenter.divide(4);
+						List<Vector2d> sCorners = sortCornersByLengthTo(new Vector2d[]{m1.corner1, m1.corner2, m1.corner3, m1.corner4}, littleCenter);
 						m1.corner3 = sCorners.get(0);
-						Vector2d center = m1.corner1.add(m1.corner3);
-						center.divide(2);
-						Vector2d c_c1 = m1.corner1.subtract(center);
-						c_c1.normalize();
-						Vector2d c_v1 = sCorners.get(1).subtract(center);
-						c_v1.normalize();
-						double dot = Vector2d.dot(c_c1, c_v1);
-						if(dot>=0){
-							m1.corner2 = sCorners.get(1);
-							m1.corner4 = sCorners.get(2);
-						}
-						else{
-							m1.corner2 = sCorners.get(2);
-							m1.corner4 = sCorners.get(1);
-						}
+						Vector2d c_c3 = m1.corner3.subtract(center);
+						c_c3.normalize();
+						sCorners.remove(0);
+						sortByCross(sCorners, c_c3, center);
+						m1.corner4 = sCorners.get(2);
+						m1.corner1 = sCorners.get(1);
+						m1.corner2 = sCorners.get(0);
 						found = true;
 						markers.remove(m1);
 						markers.remove(m2);
@@ -106,6 +104,22 @@ public class Marker {
 			}
 		}
 		return result;
+	}
+	
+	public static List<Vector2d> sortByCross(List<Vector2d> vectors, final Vector2d normV, final Vector2d center){
+		Collections.sort(vectors, new Comparator<Vector2d>(){
+			@Override
+			public int compare(Vector2d v1, Vector2d v2) {
+				Vector2d tempV1 = v1.subtract(center);
+				tempV1.normalize();
+				Vector2d tempV2 = v2.subtract(center);
+				tempV2.normalize();
+				double crossV1 = Vector2d.cross(normV, v1);
+				double crossV2 = Vector2d.cross(normV, v2);
+				return crossV1 > crossV2?1:-1;
+			}			
+		});
+		return vectors;
 	}
 	
 	public static List<Vector2d> sortCornersByLengthTo(Vector2d[] corners, Vector2d v){
@@ -135,23 +149,30 @@ public class Marker {
 	 * Checks if m2 is inside m1
 	 */
 	private static boolean isInside(Marker m1, Marker m2) {
-		Vector2d cornerIn = m2.corner1;
-		return cornerIn.getX() < getMaxX(m1) && cornerIn.getX() > getMinX(m1) && cornerIn.getY() < getMaxY(m1) && cornerIn.getY() > getMinY(m1);
+		double maxX = Marker.getMaxX(m1);
+		double minX = Marker.getMinX(m1);
+		double maxY = Marker.getMaxY(m1);
+		double minY = Marker.getMinY(m1);
+		boolean result = m2.corner1.getX() < maxX && m2.corner1.getX() > minX && m2.corner1.getY() < maxY && m2.corner1.getY() > minY;
+		result &= m2.corner2.getX() < maxX && m2.corner2.getX() > minX && m2.corner2.getY() < maxY && m2.corner2.getY() > minY;
+		result &= m2.corner3.getX() < maxX && m2.corner3.getX() > minX && m2.corner3.getY() < maxY && m2.corner3.getY() > minY;
+		result &= m2.corner4.getX() < maxX && m2.corner4.getX() > minX && m2.corner4.getY() < maxY && m2.corner4.getY() > minY;
+		return result;
 	}
 	
-	private static double getMaxX(Marker m){
+	public static double getMaxX(Marker m){
 		return Math.max(m.corner1.getX(), Math.max(m.corner2.getX(), Math.max(m.corner3.getX(),m.corner4.getX())));
 	}
 	
-	private static double getMinX(Marker m){
+	public static double getMinX(Marker m){
 		return Math.min(m.corner1.getX(), Math.min(m.corner2.getX(), Math.min(m.corner3.getX(),m.corner4.getX())));
 	}
 	
-	private static double getMaxY(Marker m){
+	public static double getMaxY(Marker m){
 		return Math.max(m.corner1.getY(), Math.max(m.corner2.getY(), Math.max(m.corner3.getY(),m.corner4.getY())));
 	}
 	
-	private static double getMinY(Marker m){
+	public static double getMinY(Marker m){
 		return Math.min(m.corner1.getY(), Math.min(m.corner2.getY(), Math.min(m.corner3.getY(),m.corner4.getY())));
 	}
 }

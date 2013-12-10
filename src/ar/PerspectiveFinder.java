@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.awt.image.renderable.ParameterBlock;
 
-import javax.media.jai.InterpolationBilinear;
+import javax.media.jai.InterpolationNearest;
 import javax.media.jai.JAI;
 import javax.media.jai.PerspectiveTransform;
 import javax.media.jai.PlanarImage;
@@ -54,7 +54,7 @@ public class PerspectiveFinder {
 		ParameterBlock pb = new ParameterBlock();
 		pb.addSource(PlanarImage.wrapRenderedImage(image));
 		pb.add(warp);
-		pb.add(new InterpolationBilinear());
+		pb.add(new InterpolationNearest());
 		RenderedOp op = JAI.create("warp", pb);
 		PlanarImage pImage = op.createInstance();
 		return new BufferedImage(pImage.getColorModel(), (WritableRaster) pImage.getData(new Rectangle(markerDimension)), false, null);

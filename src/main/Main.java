@@ -7,6 +7,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +23,7 @@ import ar.DesktopMarkerFinder;
 import ar.Marker;
 import ar.MarkerFinder;
 import ar.PerspectiveFinder;
+import ar.Vector2d;
 
 import com.github.sarxos.webcam.Webcam;
 
@@ -71,7 +73,7 @@ public class Main {
 		List<Marker> markers = ir.readImage(is);
 	}
 
-	private static void testCamera(Dimension cameraDimension) {
+	private static void testCamera(Dimension cameraDimension) throws IOException {
 		DesktopMarkerFinder finder = new DesktopMarkerFinder();
 		Webcam webcam = Webcam.getDefault();
 		webcam.setViewSize(cameraDimension);
@@ -106,15 +108,29 @@ public class Main {
 			Image im = finder.drawMarkers(img);
 			mf.setImage(im);
 			List<Marker> markers = finder.getMarkers();
+			try{
 			if (markers != null && !markers.isEmpty()) {
 				markers = Marker.setMarkerOrinetation(markers);
 				if(!markers.isEmpty()) {
-				Marker marker = markers.get(0);
-				PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
-				Matrix m = pFinder.findPerspectiveMatrix(marker);
-				BufferedImage markerImage = pFinder.transformBufferedImage(m, img, MarkerFinder.MARKER_DIMENSION);
-				mf2.setImage(markerImage);
+					Marker marker = markers.get(0);
+					double maxX = Marker.getMaxX(marker);
+					double minX = Marker.getMinX(marker);
+					double maxY = Marker.getMaxY(marker);
+					double minY = Marker.getMinY(marker);
+					Vector2d minV = new Vector2d(minX, minY);
+					BufferedImage subImage = img.getSubimage((int)minX, (int)minY,(int) (maxX-minX),(int) (maxY-minY));
+					File temp =  new File("temp.png");
+					ImageIO.write(subImage, "png", temp);
+					subImage = ImageIO.read(temp);
+					Marker subMarker = new Marker(marker.getCorner1().subtract(minV), marker.getCorner2().subtract(minV), marker.getCorner3().subtract(minV), marker.getCorner4().subtract(minV));
+					PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
+					Matrix m = pFinder.findPerspectiveMatrix(subMarker);
+					BufferedImage markerImage = pFinder.transformBufferedImage(m,subImage, MarkerFinder.MARKER_DIMENSION);
+					mf2.setImage(markerImage);
 				}
+			}
+			}catch(Exception e){
+				
 			}
 		}
 	}
@@ -126,10 +142,23 @@ public class Main {
 		List<Marker> markers = finder.findMarkersFinal(image);
 		markers = Marker.setMarkerOrinetation(markers);
 		if (!markers.isEmpty()) {
+			long time1 = System.currentTimeMillis();
 			Marker marker = markers.get(0);
+			double maxX = Marker.getMaxX(marker);
+			double minX = Marker.getMinX(marker);
+			double maxY = Marker.getMaxY(marker);
+			double minY = Marker.getMinY(marker);
+			Vector2d minV = new Vector2d(minX, minY);
+//			BufferedImage subImage = image.getSubimage((int)minX, (int)minY,(int) (maxX-minX),(int) (maxY-minY));
+//			File temp =  new File("temp.png");
+//			ImageIO.write(subImage, "png", temp);
+//			subImage = ImageIO.read(temp);
+//			Marker subMarker = new Marker(marker.getCorner1().subtract(minV), marker.getCorner2().subtract(minV), marker.getCorner3().subtract(minV), marker.getCorner4().subtract(minV));
 			PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
 			Matrix m = pFinder.findPerspectiveMatrix(marker);
-			BufferedImage markerImage = pFinder.transformBufferedImage(m, image, MarkerFinder.MARKER_DIMENSION);
+			BufferedImage markerImage = pFinder.transformBufferedImage(m,image, MarkerFinder.MARKER_DIMENSION);
+			long time2 = System.currentTimeMillis();
+			System.out.println("Czas: " + (time2-time1));
 			final MainFrame mf = new MainFrame(markerImage, "Obraz");
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
