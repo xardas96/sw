@@ -110,7 +110,8 @@ public class Main {
 			List<Marker> markers = finder.getMarkers();
 			try{
 			if (markers != null && !markers.isEmpty()) {
-				markers = Marker.setMarkerOrinetation(markers);
+				markers = Marker.setMarkerOrinetation2(markers, img);
+				mf.setImage(im);
 				if(!markers.isEmpty()) {
 					Marker marker = markers.get(0);
 					double maxX = Marker.getMaxX(marker);

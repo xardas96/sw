@@ -1,6 +1,10 @@
 package ar;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -106,6 +110,54 @@ public class Marker {
 		return result;
 	}
 	
+	
+	public static List<Marker> setMarkerOrinetation2(List<Marker> markers, BufferedImage image) {
+		List<Marker> result = new ArrayList<Marker>();
+		Graphics2D g = (Graphics2D) image.getGraphics();
+		g.setColor(Color.GREEN);
+		for(int i = markers.size()-1; i >= 0; i--){
+			Marker m = markers.get(i);
+			Vector2d center = m.corner1.add(m.corner3).add(m.corner2).add(m.corner4);
+			center.divide(4);
+			Vector2d[] cornerArray = new Vector2d[]{m.corner1, m.corner2, m.corner3, m.corner4};
+			double[] blackness = new double[cornerArray.length];
+			Vector2d[] debugPoints = new Vector2d[cornerArray.length];
+			for(int j = 0; j < cornerArray.length; j++){
+				Vector2d c = cornerArray[j];
+				Vector2d c_center = center.subtract(c);
+				double d = 15; //TODO
+				d*= c_center.getLength()/(MarkerFinder.MARKER_DIMENSION.width/2*Math.sqrt(2));
+				c_center.normalize();
+				c_center.multiply(d);
+				Vector2d p = c.add(c_center);
+				blackness[j] = calculateBlackness(p, image); 
+				debugPoints[j] = p;
+			}
+			sortByBlackness(cornerArray, blackness);
+			
+			//DEBUG
+			blackness = sortByBlackness(debugPoints, blackness);
+			Vector2d p = debugPoints[0];
+			g.fillOval((int) p.getX()-2,(int) p.getY()-2, 4, 4);
+			//ENDDEBUG
+			if(blackness[0] < 100){ //TODO THRESHOLD
+				m.corner3 = cornerArray[0];
+				Vector2d c_c3 = m.corner3.subtract(center);
+				c_c3.normalize();
+				List<Vector2d> sCorners = new ArrayList<>();
+				for(int j = 1; j < cornerArray.length; j++){
+					sCorners.add(cornerArray[j]);
+				}
+				sortByCross(sCorners, c_c3, center);
+				m.corner4 = sCorners.get(2);
+				m.corner1 = sCorners.get(1);
+				m.corner2 = sCorners.get(0);
+				result.add(m);
+			}
+		}
+		return result;
+	}
+	
 	public static List<Vector2d> sortByCross(List<Vector2d> vectors, final Vector2d normV, final Vector2d center){
 		Collections.sort(vectors, new Comparator<Vector2d>(){
 			@Override
@@ -120,6 +172,35 @@ public class Marker {
 			}			
 		});
 		return vectors;
+	}
+	
+	public static double[] sortByBlackness(Vector2d[] vectors, double[] bl){
+		double[] blackness = Arrays.copyOf(bl, bl.length);
+		for(int i = 0; i < blackness.length-1; i++){
+			for(int j = i; j < blackness.length; j++){
+				if(blackness[i] > blackness[j]){
+					double t = blackness[i];
+					blackness[i] = blackness[j];
+					blackness[j] = t;
+					Vector2d temp = vectors[i];
+					vectors[i] = vectors[j];
+					vectors[j] = temp;
+				}
+			}
+		}
+		return blackness;
+	}
+	
+	public static double calculateBlackness(Vector2d point, BufferedImage image){
+		double blackness = 0;
+		for(int i = -1; i < 2; i++){
+			for(int j = -1; j < 2; j++){
+				Color c = new Color(image.getRGB((int)point.getX()+i, (int) point.getY()+j));
+				double b = c.getRed()+c.getBlue()+c.getRed();
+				blackness += b /=3;
+			}
+		}
+		return blackness/9;
 	}
 	
 	public static List<Vector2d> sortCornersByLengthTo(Vector2d[] corners, Vector2d v){
