@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ar.Marker;
@@ -15,7 +14,7 @@ import ar.image.ImageOperations;
 public class CornerBasedOrientationFinder extends OrientationFinder{
 	private boolean debug = true;
 	private double blacknessTreshold = 100;
-	private double blackCornerDistance = 15;
+	private double blackCornerDistance = 20;
 	
 	public CornerBasedOrientationFinder(){
 		
@@ -77,7 +76,6 @@ public class CornerBasedOrientationFinder extends OrientationFinder{
 	}
 	
 	private boolean meetsConditions(double[] blackness){
-		System.out.println(Arrays.toString(blackness));
 		boolean b = blackness[0] <= blacknessTreshold;
 		for(int i = 1; i < blackness.length && b; i++)
 			b &= blackness[i] > blacknessTreshold;
