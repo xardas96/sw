@@ -24,6 +24,7 @@ import ar.Marker;
 import ar.MarkerFinder;
 import ar.PerspectiveFinder;
 import ar.Vector2d;
+import ar.orientation.CornerBasedOrientationFinder;
 
 import com.github.sarxos.webcam.Webcam;
 
@@ -110,7 +111,7 @@ public class Main {
 			List<Marker> markers = finder.getMarkers();
 			try{
 			if (markers != null && !markers.isEmpty()) {
-				markers = Marker.setMarkerOrinetation2(markers, img);
+				markers = new CornerBasedOrientationFinder().setMarkerOrinetation(markers, img);
 				mf.setImage(im);
 				if(!markers.isEmpty()) {
 					Marker marker = markers.get(0);
@@ -141,7 +142,7 @@ public class Main {
 		BufferedImage image = ImageIO.read(is);
 		DesktopMarkerFinder finder = new DesktopMarkerFinder();
 		List<Marker> markers = finder.findMarkersFinal(image);
-		markers = Marker.setMarkerOrinetation(markers);
+		markers = new CornerBasedOrientationFinder().setMarkerOrinetation(markers, image);
 		if (!markers.isEmpty()) {
 			long time1 = System.currentTimeMillis();
 			Marker marker = markers.get(0);
