@@ -12,7 +12,7 @@ import ar.Vector2d;
 import ar.image.ImageOperations;
 
 public class CornerBasedOrientationFinder extends OrientationFinder{
-	private boolean debug = true;
+	private boolean debug = false;
 	private double blacknessTreshold = 100;
 	private double blackCornerDistance = 20;
 	

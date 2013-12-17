@@ -24,6 +24,8 @@ import ar.Marker;
 import ar.MarkerFinder;
 import ar.PerspectiveFinder;
 import ar.Vector2d;
+import ar.code.CodeDecryptor;
+import ar.code.CodeRetreiver;
 import ar.orientation.CornerBasedOrientationFinder;
 
 import com.github.sarxos.webcam.Webcam;
@@ -128,6 +130,9 @@ public class Main {
 					PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
 					Matrix m = pFinder.findPerspectiveMatrix(subMarker);
 					BufferedImage markerImage = pFinder.transformBufferedImage(m,subImage, MarkerFinder.MARKER_DIMENSION);
+					CodeRetreiver cr = new CodeRetreiver();
+					int[] code = cr.retreiveCode(markerImage);
+					System.out.println(CodeDecryptor.decryptCode(code));
 					mf2.setImage(markerImage);
 				}
 			}
