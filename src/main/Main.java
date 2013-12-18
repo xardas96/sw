@@ -26,6 +26,7 @@ import ar.image.DerivativeGaussianKernel;
 import ar.image.ImageOperations;
 import ar.marker.InsideMarkerFilter;
 import ar.marker.Marker;
+import ar.marker.MarkerFilter;
 import ar.orientation.CornerBasedOrientationFinder;
 import ar.perspective.PerspectiveFinder;
 import ar.utils.Vector2d;
@@ -108,41 +109,44 @@ public class Main {
 		});
 
 		timer.start();
+		MarkerFilter insideFilter = new InsideMarkerFilter();
 		while (true) {
 			BufferedImage img = webcam.getImage();
-			BufferedImage debugImage = ImageOperations.copyImage(img);
-			List<Marker> markers = finder.findMarkers(img, debugImage);
-			mf.setImage(debugImage);
-			markers = new InsideMarkerFilter().filterMarkers(markers, img);
-			try{
-			if (markers != null && !markers.isEmpty()) {
-				markers = new CornerBasedOrientationFinder().setMarkerOrinetation(markers, img);
-				DesktopMarkerFinder.drawMarkers(debugImage, markers);
+			if(img != null){
+				BufferedImage debugImage = ImageOperations.copyImage(img);
+				List<Marker> markers = finder.findMarkers(img, debugImage);
 				mf.setImage(debugImage);
-				if(!markers.isEmpty()) {
-					Marker marker = markers.get(0);
-					double maxX = Marker.getMaxX(marker);
-					double minX = Marker.getMinX(marker);
-					double maxY = Marker.getMaxY(marker);
-					double minY = Marker.getMinY(marker);
-					Vector2d minV = new Vector2d(minX, minY);
-					BufferedImage subImage = img.getSubimage((int)minX, (int)minY,(int) (maxX-minX),(int) (maxY-minY));
-					File temp =  new File("temp.png");
-					temp.deleteOnExit();
-					ImageIO.write(subImage, "png", temp);
-					subImage = ImageIO.read(temp);
-					Marker subMarker = new Marker(marker.getCorner1().subtract(minV), marker.getCorner2().subtract(minV), marker.getCorner3().subtract(minV), marker.getCorner4().subtract(minV));
-					PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
-					Matrix m = pFinder.findPerspectiveMatrix(subMarker);
-					BufferedImage markerImage = pFinder.transformBufferedImage(m,subImage, MarkerFinder.MARKER_DIMENSION);
-					CodeRetreiver cr = new CodeRetreiver();
-					int[] code = cr.retreiveCode(markerImage);
-					System.out.println(CodeDecryptor.decryptCode(code));
-					mf2.setImage(markerImage);
+				markers = insideFilter.filterMarkers(markers, img);
+				try{
+				if (markers != null && !markers.isEmpty()) {
+					markers = new CornerBasedOrientationFinder().setMarkerOrinetation(markers, img);
+					DesktopMarkerFinder.drawMarkers(debugImage, markers);
+					mf.setImage(debugImage);
+					if(!markers.isEmpty()) {
+						Marker marker = markers.get(0);
+						double maxX = Marker.getMaxX(marker);
+						double minX = Marker.getMinX(marker);
+						double maxY = Marker.getMaxY(marker);
+						double minY = Marker.getMinY(marker);
+						Vector2d minV = new Vector2d(minX, minY);
+						BufferedImage subImage = img.getSubimage((int)minX, (int)minY,(int) (maxX-minX),(int) (maxY-minY));
+						File temp =  new File("temp.png");
+						temp.deleteOnExit();
+						ImageIO.write(subImage, "png", temp);
+						subImage = ImageIO.read(temp);
+						Marker subMarker = new Marker(marker.getCorner1().subtract(minV), marker.getCorner2().subtract(minV), marker.getCorner3().subtract(minV), marker.getCorner4().subtract(minV));
+						PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
+						Matrix m = pFinder.findPerspectiveMatrix(subMarker);
+						BufferedImage markerImage = pFinder.transformBufferedImage(m,subImage, MarkerFinder.MARKER_DIMENSION);
+						CodeRetreiver cr = new CodeRetreiver();
+						int[] code = cr.retreiveCode(markerImage);
+						System.out.println(CodeDecryptor.decryptCode(code));
+						mf2.setImage(markerImage);
+					}
 				}
-			}
-			}catch(Exception e){
-				//e.printStackTrace();
+				}catch(Exception e){
+					//e.printStackTrace();
+				}
 			}
 		}
 	}
