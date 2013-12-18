@@ -51,6 +51,9 @@ public class CornerBasedOrientationFinder extends OrientationFinder{
 			blackness = sortByBlackness(cornerArray, blackness);
 			if(meetsConditions(blackness)){
 				m.setCorner3(cornerArray[0]);
+				m.setCorner1(cornerArray[1]);
+				m.setCorner2(cornerArray[2]);
+				m.setCorner4(cornerArray[3]);
 				setOtherCornersBasedOnThrid(m, center);
 				result.add(m);
 			}

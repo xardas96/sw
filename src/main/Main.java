@@ -26,6 +26,7 @@ import ar.PerspectiveFinder;
 import ar.Vector2d;
 import ar.code.CodeDecryptor;
 import ar.code.CodeRetreiver;
+import ar.marker.InsideMarkerFilter;
 import ar.orientation.CornerBasedOrientationFinder;
 
 import com.github.sarxos.webcam.Webcam;
@@ -111,11 +112,13 @@ public class Main {
 			Image im = finder.drawMarkers(img);
 			mf.setImage(im);
 			List<Marker> markers = finder.getMarkers();
+			markers = new InsideMarkerFilter().filterMarkers(markers, img);
 			try{
 			if (markers != null && !markers.isEmpty()) {
 				markers = new CornerBasedOrientationFinder().setMarkerOrinetation(markers, img);
 				mf.setImage(im);
 				if(!markers.isEmpty()) {
+					System.out.println("Weszlo");
 					Marker marker = markers.get(0);
 					double maxX = Marker.getMaxX(marker);
 					double minX = Marker.getMinX(marker);
@@ -137,7 +140,7 @@ public class Main {
 				}
 			}
 			}catch(Exception e){
-				
+				//e.printStackTrace();
 			}
 		}
 	}
