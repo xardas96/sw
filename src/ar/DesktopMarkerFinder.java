@@ -22,10 +22,22 @@ import ar.utils.Vector2d;
 
 public class DesktopMarkerFinder implements MarkerFinder {
 	private Random random;
-	private List<Marker> markers;
+	private int debugMode = DEBUG_OFF;
+	public static final int DEBUG_SHOW_STAGE1 = 1;
+	public static final int DEBUG_SHOW_STAGE2 = 2;
+	public static final int DEBUG_SHOW_STAGE3 = 3;
+	public static final int DEBUG_SHOW_STAGE4 = 4;
+	public static final int DEBUG_SHOW_STAGE5 = 5;
+	public static final int DEBUG_SHOW_STAGE6 = 6;
+	public static final int DEBUG_OFF = 0;
 
 	public DesktopMarkerFinder() {
 		random = new Random();
+	}
+	
+	public DesktopMarkerFinder(int debugMode){
+		this();
+		this.debugMode = debugMode;
 	}
 
 	@Override
@@ -33,120 +45,6 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		BufferedImage image = ImageIO.read(is);
 		return findMarkers(image);
 	}
-
-//	public Image drawEdgels(InputStream is) throws IOException {
-//		BufferedImage image = ImageIO.read(is);
-//		long startTime = System.currentTimeMillis();
-//		List<Edgel> edgels = findMarkers(image);
-//		long stopTime = System.currentTimeMillis();
-//		System.out.println("Czas znajdowania Edgelsów: " + (stopTime - startTime));
-//		Graphics2D g = image.createGraphics();
-//		System.out.println(edgels.size());
-//		for (Edgel edgel : edgels) {
-//			g.setColor(Color.BLUE);
-//			g.fillRect((int) edgel.getX() - 2, (int) edgel.getY() - 2, 4, 4);
-//		}
-//		return image;
-//	}
-
-	public Image drawLineSegments(InputStream is) throws IOException {
-		BufferedImage image = ImageIO.read(is);
-		long startTime = System.currentTimeMillis();
-		List<LineSegment> edgels = findMarkers2(image);
-		long stopTime = System.currentTimeMillis();
-		System.out.println("czas line segmentów: " + (stopTime - startTime));
-		Graphics2D g = image.createGraphics();
-		for (LineSegment segment : edgels) {
-			g.setColor(Color.YELLOW);
-			g.setStroke(new BasicStroke(2.0f));
-			if (segment.isStartCorner()) {
-				g.drawLine((int) segment.getStart().getX(), (int) segment.getStart().getY(), (int) segment.getStart().getX(), (int) segment.getStart().getY());
-			}
-			if (segment.isEndCorner()) {
-				g.drawLine((int) segment.getEnd().getX(), (int) segment.getEnd().getY(), (int) segment.getEnd().getX(), (int) segment.getEnd().getY());
-			}
-			drawArrow(image, (int) segment.getStart().getX(), (int) segment.getStart().getY(), (int) segment.getEnd().getX(), (int) segment.getEnd().getY(), segment.getDirection().getX(), segment.getDirection().getY());
-		}
-		return image;
-	}
-
-	public Image drawLineSegments(BufferedImage image) {
-		// long startTime = System.currentTimeMillis();
-		List<LineSegment> edgels = findMarkers2(image);
-		// long stopTime = System.currentTimeMillis();
-		// System.out.println("czas line segmentów: " + (stopTime - startTime));
-		Graphics2D g = image.createGraphics();
-		for (LineSegment segment : edgels) {
-			g.setColor(Color.YELLOW);
-			g.setStroke(new BasicStroke(2.0f));
-			if (segment.isStartCorner()) {
-				g.drawLine((int) segment.getStart().getX(), (int) segment.getStart().getY(), (int) segment.getStart().getX(), (int) segment.getStart().getY());
-			}
-			if (segment.isEndCorner()) {
-				g.drawLine((int) segment.getEnd().getX(), (int) segment.getEnd().getY(), (int) segment.getEnd().getX(), (int) segment.getEnd().getY());
-			}
-			drawArrow(image, (int) segment.getStart().getX(), (int) segment.getStart().getY(), (int) segment.getEnd().getX(), (int) segment.getEnd().getY(), segment.getDirection().getX(), segment.getDirection().getY());
-		}
-		return image;
-	}
-
-	public Image drawMarkers(InputStream is) throws IOException {
-		BufferedImage image = ImageIO.read(is);
-		// long startTime = System.currentTimeMillis();
-		markers = findMarkers(image);
-		// long stopTime = System.currentTimeMillis();
-		// System.out.println("czas markerow: " + (stopTime - startTime));
-		Graphics2D g = image.createGraphics();
-		// System.out.println(markers.size());
-		for (Marker marker : markers) {
-			g.setColor(Color.YELLOW);
-			g.setStroke(new BasicStroke(2.0f));
-			g.drawLine((int) marker.getCorner1().getX(), (int) marker.getCorner1().getY(), (int) marker.getCorner2().getX(), (int) marker.getCorner2().getY());
-			g.drawLine((int) marker.getCorner2().getX(), (int) marker.getCorner2().getY(), (int) marker.getCorner3().getX(), (int) marker.getCorner3().getY());
-			g.drawLine((int) marker.getCorner3().getX(), (int) marker.getCorner3().getY(), (int) marker.getCorner4().getX(), (int) marker.getCorner4().getY());
-			g.drawLine((int) marker.getCorner4().getX(), (int) marker.getCorner4().getY(), (int) marker.getCorner1().getX(), (int) marker.getCorner1().getY());
-		}
-		return image;
-	}
-
-	public List<Marker> getMarkers() {
-		return markers;
-	}
-
-	public Image drawMarkers(BufferedImage image) {
-		// BufferedImage image = ImageIO.read(is);
-		// long startTime = System.currentTimeMillis();
-		markers = findMarkers(image);
-		// long stopTime = System.currentTimeMillis();
-		// System.out.println("czas markerow: " + (stopTime - startTime));
-		Graphics2D g = image.createGraphics();
-		// System.out.println(markers.size());
-		for (Marker marker : markers) {
-			g.setColor(Color.YELLOW);
-			g.setStroke(new BasicStroke(2.0f));
-			g.drawLine((int) marker.getCorner1().getX(), (int) marker.getCorner1().getY(), (int) marker.getCorner2().getX(), (int) marker.getCorner2().getY());
-			g.drawLine((int) marker.getCorner2().getX(), (int) marker.getCorner2().getY(), (int) marker.getCorner3().getX(), (int) marker.getCorner3().getY());
-			g.drawLine((int) marker.getCorner3().getX(), (int) marker.getCorner3().getY(), (int) marker.getCorner4().getX(), (int) marker.getCorner4().getY());
-			g.drawLine((int) marker.getCorner4().getX(), (int) marker.getCorner4().getY(), (int) marker.getCorner1().getX(), (int) marker.getCorner1().getY());
-		}
-		return image;
-	}
-
-//	private List<Edgel> findMarkers(BufferedImage image) {
-//		List<Edgel> edgels = new ArrayList<Edgel>();
-//		int height = image.getHeight();
-//		int width = image.getWidth();
-//		for (int y = 2; y < height - 3; y += REGION_DIMENSION) {
-//			for (int x = 2; x < width - 3; x += REGION_DIMENSION) {
-//				int left = Math.min(REGION_DIMENSION, width - x - 3);
-//				int top = Math.min(REGION_DIMENSION, height - y - 3);
-//				List<Edgel> regionEdgels = findEdgels(image, x, y, left, top);
-//				edgels.addAll(regionEdgels);
-//			}
-//		}
-//		System.out.println(edgels.size());
-//		return edgels;
-//	}
 
 	public List<Marker> findMarkers(BufferedImage image) {
 		List<Edgel> edgels = new ArrayList<Edgel>();
@@ -183,8 +81,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				}
 				if (chain.size() > 2) {
 					Marker marker = new Marker();
-					marker.setChain(chain);
-					// System.out.println(chain);
+					marker.setChain(chain);;
 					marker.reconstructCorners();
 					markers.add(marker);
 				}
@@ -192,10 +89,13 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		}
 		return markers;
 	}
-
-	private List<LineSegment> findMarkers2(BufferedImage image) {
+	
+	public List<Marker> findMarkers(BufferedImage image, BufferedImage debugImage){
 		List<Edgel> edgels = new ArrayList<Edgel>();
 		List<LineSegment> segments = new ArrayList<LineSegment>();
+		List<LineSegment> debugSegments = null;
+		if(debugMode==DEBUG_SHOW_STAGE2)
+			debugSegments = new ArrayList<LineSegment>();
 		int height = image.getHeight();
 		int width = image.getWidth();
 		for (int y = 2; y < height - 3; y += REGION_DIMENSION) {
@@ -207,28 +107,48 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				List<LineSegment> lineSegments;
 				if (regionEdgels.size() > EDGELS_ONLINE) {
 					lineSegments = findLineSegments(regionEdgels);
+					if(debugMode==DEBUG_SHOW_STAGE2)
+						debugSegments.addAll(lineSegments); //TODO kopiowanie lineSegments
 					mergeLineSegments(image, lineSegments);
 					segments.addAll(lineSegments);
 				}
 			}
 		}
-		// System.out.println("Przed:" + segments.size());
+		if(debugMode==DEBUG_SHOW_STAGE1)
+			drawEdgels(debugImage, edgels);
+		if(debugMode==DEBUG_SHOW_STAGE2)
+			drawLineSegments(debugImage, debugSegments);
 		mergeLineSegments(image, segments);
-		// System.out.println("Po: " + segments.size());
+		if(debugMode==DEBUG_SHOW_STAGE3)
+			drawLineSegments(debugImage, segments);
 		extendLines(image, segments);
-		// segments = findLinesWithCorners(image, segments);
-		return segments;
-	}
-
-	// TODO tu zaczyna siê "dobry" kod :)
-
-	private void drawArrow(BufferedImage image, int x1, int y1, int x2, int y2, double xn, double yn) {
-		Graphics g = image.getGraphics();
-		g.setColor(Color.GREEN);
-		g.drawLine(x1, y1, x2, y2);
-		g.setColor(Color.RED);
-		g.drawLine(x2, y2, x2 + (int) (5.0 * (-xn + yn)), y2 + (int) (5.0 * (-yn - xn)));
-		g.drawLine(x2, y2, x2 + (int) (5.0 * (-xn - yn)), y2 + (int) (5.0 * (-yn + xn)));
+		if(debugMode==DEBUG_SHOW_STAGE4)
+			drawLineSegments(debugImage, segments);
+		segments = findLinesWithCorners(image, segments);
+		if(debugMode==DEBUG_SHOW_STAGE5)
+			drawLineSegments(debugImage, segments);
+		List<Marker> markers = new ArrayList<Marker>();
+		if (!segments.isEmpty()) {
+			do {
+				LineSegment chainSegment = segments.remove(0);
+				List<LineSegment> chain = new ArrayList<LineSegment>();
+				int length = 1;
+				findChainOfLines(chainSegment, true, segments, chain, length);
+				chain.add(chainSegment);
+				if (chain.size() < 4) {
+					findChainOfLines(chainSegment, false, segments, chain, chain.size());
+				}
+				if (chain.size() > 2) {
+					Marker marker = new Marker();
+					marker.setChain(chain);;
+					marker.reconstructCorners();
+					markers.add(marker);
+				}
+			} while (!segments.isEmpty());
+		}
+		if(debugMode==DEBUG_SHOW_STAGE6)
+			drawMarkers(debugImage, markers);
+		return markers;
 	}
 
 	private void findChainOfLines(LineSegment startSegment, boolean atStartPoint, List<LineSegment> lineSegments, List<LineSegment> chain, int length) {
@@ -507,7 +427,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	}
 
 	private int[][] prepareColorArrayForX(BufferedImage image, int x, int y) {
-		int[][] colorArray = new int[5][3]; // magicNumbers
+		int[][] colorArray = new int[5][3];
 		for (int i = 0; i < colorArray.length - 1; i++) {
 			colorArray[i] = ImageOperations.getRGBComposites(image, x - 2 + 1 * i, y);
 		}
@@ -515,7 +435,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	}
 
 	private int[][] prepareColorArrayForY(BufferedImage image, int x, int y) {
-		int[][] colorArray = new int[5][3]; // magicNumbers
+		int[][] colorArray = new int[5][3];
 		for (int i = 0; i < colorArray.length - 1; i++) {
 			colorArray[i] = ImageOperations.getRGBComposites(image, x, y - 2 + 1 * i);
 		}
@@ -525,5 +445,54 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	private void leftShiftArray(int[][] array) {
 		for (int i = 0; i < array.length - 1; i++)
 			array[i] = array[i + 1];
-	}	
+	}
+	
+//DEBUG METHODS
+	private Image drawEdgels(BufferedImage image, List<Edgel> edgels) {
+		Graphics2D g = image.createGraphics();
+		for (Edgel edgel : edgels) {
+			g.setColor(Color.BLUE);
+			g.fillRect((int) edgel.getX() - 2, (int) edgel.getY() - 2, 4, 4);
+		}
+		return image;
+	}
+	
+	private Image drawLineSegments(BufferedImage image, List<LineSegment> segments) {
+		Graphics2D g = image.createGraphics();
+		for (LineSegment segment : segments) {
+			g.setColor(Color.YELLOW);
+			g.setStroke(new BasicStroke(2.0f));
+			if (segment.isStartCorner()) {
+				g.drawLine((int) segment.getStart().getX(), (int) segment.getStart().getY(), (int) segment.getStart().getX(), (int) segment.getStart().getY());
+			}
+			if (segment.isEndCorner()) {
+				g.drawLine((int) segment.getEnd().getX(), (int) segment.getEnd().getY(), (int) segment.getEnd().getX(), (int) segment.getEnd().getY());
+			}
+			drawArrow(image, (int) segment.getStart().getX(), (int) segment.getStart().getY(), (int) segment.getEnd().getX(), (int) segment.getEnd().getY(), segment.getDirection().getX(), segment.getDirection().getY());
+		}
+		return image;
+	}
+	
+	private void drawArrow(BufferedImage image, int x1, int y1, int x2, int y2, double xn, double yn) {
+		Graphics g = image.getGraphics();
+		g.setColor(Color.GREEN);
+		g.drawLine(x1, y1, x2, y2);
+		g.setColor(Color.RED);
+		g.drawLine(x2, y2, x2 + (int) (5.0 * (-xn + yn)), y2 + (int) (5.0 * (-yn - xn)));
+		g.drawLine(x2, y2, x2 + (int) (5.0 * (-xn - yn)), y2 + (int) (5.0 * (-yn + xn)));
+	}
+	
+	public static Image drawMarkers(BufferedImage image, List<Marker> markers) {
+		Graphics2D g = image.createGraphics();
+		for (Marker marker : markers) {
+			g.setColor(Color.YELLOW);
+			g.setStroke(new BasicStroke(2.0f));
+			g.drawLine((int) marker.getCorner1().getX(), (int) marker.getCorner1().getY(), (int) marker.getCorner2().getX(), (int) marker.getCorner2().getY());
+			g.drawLine((int) marker.getCorner2().getX(), (int) marker.getCorner2().getY(), (int) marker.getCorner3().getX(), (int) marker.getCorner3().getY());
+			g.drawLine((int) marker.getCorner3().getX(), (int) marker.getCorner3().getY(), (int) marker.getCorner4().getX(), (int) marker.getCorner4().getY());
+			g.drawLine((int) marker.getCorner4().getX(), (int) marker.getCorner4().getY(), (int) marker.getCorner1().getX(), (int) marker.getCorner1().getY());
+		}
+		return image;
+	}
+	
 }

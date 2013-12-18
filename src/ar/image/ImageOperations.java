@@ -1,6 +1,7 @@
 package ar.image;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import ar.utils.Vector2d;
@@ -53,5 +54,12 @@ public abstract class ImageOperations {
 
 	public static int getRGBComposite(BufferedImage image, int x, int y, int color) {
 		return (image.getRGB(x, y) >> color) & 0x0ff;
+	}
+	
+	public static BufferedImage copyImage(BufferedImage image){
+		BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = (Graphics2D)	result.getGraphics();
+		g.drawImage(image, 0, 0, null);
+		return result;
 	}
 }
