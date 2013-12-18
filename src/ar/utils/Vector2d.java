@@ -1,4 +1,4 @@
-package ar;
+package ar.utils;
 
 public class Vector2d {
 	private double x;

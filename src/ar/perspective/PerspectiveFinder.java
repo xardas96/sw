@@ -1,4 +1,4 @@
-package ar;
+package ar.perspective;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -13,6 +13,8 @@ import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.WarpPerspective;
 
+import ar.marker.Marker;
+import ar.utils.Vector2d;
 import Jama.Matrix;
 
 public class PerspectiveFinder {

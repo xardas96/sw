@@ -6,10 +6,10 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.Marker;
 import ar.MarkerFinder;
-import ar.Vector2d;
 import ar.image.ImageOperations;
+import ar.marker.Marker;
+import ar.utils.Vector2d;
 
 public class CornerBasedOrientationFinder extends OrientationFinder{
 	private boolean debug = false;

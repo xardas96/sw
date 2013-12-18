@@ -3,6 +3,8 @@ package ar;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.utils.Vector2d;
+
 public class LineSegment {
 	private Edgel start;
 	private Edgel end;

@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.io.InputStream;
 import java.util.List;
 
+import ar.marker.Marker;
+
 /**
  * An interface to enable desktop and Android implementations of reading an
  * image

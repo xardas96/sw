@@ -1,5 +1,7 @@
 package ar;
 
+import ar.utils.Vector2d;
+
 public class Edgel {
 	private Vector2d position;
 	private Vector2d direction; // znormalizowany wektor 2 elementowy (x i y);

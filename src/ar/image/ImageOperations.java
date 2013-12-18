@@ -3,7 +3,7 @@ package ar.image;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-import ar.Vector2d;
+import ar.utils.Vector2d;
 
 public abstract class ImageOperations {
 	public static double calculateBlackness(Vector2d point, BufferedImage image){

@@ -18,16 +18,16 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import Jama.Matrix;
-import ar.DerivativeGaussianKernel;
 import ar.DesktopMarkerFinder;
-import ar.Marker;
 import ar.MarkerFinder;
-import ar.PerspectiveFinder;
-import ar.Vector2d;
 import ar.code.CodeDecryptor;
 import ar.code.CodeRetreiver;
+import ar.image.DerivativeGaussianKernel;
 import ar.marker.InsideMarkerFilter;
+import ar.marker.Marker;
 import ar.orientation.CornerBasedOrientationFinder;
+import ar.perspective.PerspectiveFinder;
+import ar.utils.Vector2d;
 
 import com.github.sarxos.webcam.Webcam;
 

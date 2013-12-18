@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import ar.Marker;
-import ar.Vector2d;
+import ar.marker.Marker;
+import ar.utils.Vector2d;
 
 public abstract class OrientationFinder {
 	public abstract List<Marker> setMarkerOrinetation(List<Marker> markers, BufferedImage image);

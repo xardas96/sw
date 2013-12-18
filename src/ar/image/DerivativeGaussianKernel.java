@@ -1,4 +1,4 @@
-package ar;
+package ar.image;
 
 import java.awt.Color;
 import java.awt.Image;

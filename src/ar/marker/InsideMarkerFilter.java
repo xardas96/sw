@@ -4,8 +4,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.Marker;
-
 public class InsideMarkerFilter implements MarkerFilter{
 
 	@Override

@@ -15,6 +15,9 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import ar.marker.Marker;
+import ar.utils.Vector2d;
+
 public class DesktopMarkerFinder implements MarkerFinder {
 	private Random random;
 	private List<Marker> markers;

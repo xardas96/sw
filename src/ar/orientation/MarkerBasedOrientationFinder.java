@@ -4,8 +4,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.Marker;
-import ar.Vector2d;
+import ar.marker.Marker;
+import ar.utils.Vector2d;
 
 public class MarkerBasedOrientationFinder extends OrientationFinder{
 

@@ -5,8 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import ar.MarkerFinder;
-import ar.Vector2d;
 import ar.image.ImageOperations;
+import ar.utils.Vector2d;
 
 public class CodeRetreiver {
 	private static final double scalar = (MarkerFinder.MARKER_DIMENSION.width/500.0);
