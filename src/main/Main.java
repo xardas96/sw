@@ -149,7 +149,7 @@ public class Main {
 		InputStream is = new FileInputStream(test);
 		BufferedImage image = ImageIO.read(is);
 		DesktopMarkerFinder finder = new DesktopMarkerFinder();
-		List<Marker> markers = finder.findMarkersFinal(image);
+		List<Marker> markers = finder.findMarkers(image);
 		markers = new CornerBasedOrientationFinder().setMarkerOrinetation(markers, image);
 		if (!markers.isEmpty()) {
 			long time1 = System.currentTimeMillis();

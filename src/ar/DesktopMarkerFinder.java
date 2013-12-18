@@ -15,6 +15,8 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import ar.image.DerivativeGaussianKernel;
+import ar.image.ImageOperations;
 import ar.marker.Marker;
 import ar.utils.Vector2d;
 
@@ -23,30 +25,29 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	private List<Marker> markers;
 
 	public DesktopMarkerFinder() {
-		// ¿eby by³o szybiej, jako pole w klasie tworzone raz
 		random = new Random();
 	}
 
 	@Override
 	public List<Marker> readImage(InputStream is) throws IOException {
 		BufferedImage image = ImageIO.read(is);
-		return null;// findMarkers(image);
+		return findMarkers(image);
 	}
 
-	public Image drawEdgels(InputStream is) throws IOException {
-		BufferedImage image = ImageIO.read(is);
-		long startTime = System.currentTimeMillis();
-		List<Edgel> edgels = findMarkers(image);
-		long stopTime = System.currentTimeMillis();
-		System.out.println("Czas znajdowania Edgelsów: " + (stopTime - startTime));
-		Graphics2D g = image.createGraphics();
-		System.out.println(edgels.size());
-		for (Edgel edgel : edgels) {
-			g.setColor(Color.BLUE);
-			g.fillRect((int) edgel.getX() - 2, (int) edgel.getY() - 2, 4, 4);
-		}
-		return image;
-	}
+//	public Image drawEdgels(InputStream is) throws IOException {
+//		BufferedImage image = ImageIO.read(is);
+//		long startTime = System.currentTimeMillis();
+//		List<Edgel> edgels = findMarkers(image);
+//		long stopTime = System.currentTimeMillis();
+//		System.out.println("Czas znajdowania Edgelsów: " + (stopTime - startTime));
+//		Graphics2D g = image.createGraphics();
+//		System.out.println(edgels.size());
+//		for (Edgel edgel : edgels) {
+//			g.setColor(Color.BLUE);
+//			g.fillRect((int) edgel.getX() - 2, (int) edgel.getY() - 2, 4, 4);
+//		}
+//		return image;
+//	}
 
 	public Image drawLineSegments(InputStream is) throws IOException {
 		BufferedImage image = ImageIO.read(is);
@@ -92,7 +93,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	public Image drawMarkers(InputStream is) throws IOException {
 		BufferedImage image = ImageIO.read(is);
 		// long startTime = System.currentTimeMillis();
-		markers = findMarkersFinal(image);
+		markers = findMarkers(image);
 		// long stopTime = System.currentTimeMillis();
 		// System.out.println("czas markerow: " + (stopTime - startTime));
 		Graphics2D g = image.createGraphics();
@@ -115,7 +116,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	public Image drawMarkers(BufferedImage image) {
 		// BufferedImage image = ImageIO.read(is);
 		// long startTime = System.currentTimeMillis();
-		markers = findMarkersFinal(image);
+		markers = findMarkers(image);
 		// long stopTime = System.currentTimeMillis();
 		// System.out.println("czas markerow: " + (stopTime - startTime));
 		Graphics2D g = image.createGraphics();
@@ -131,23 +132,23 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		return image;
 	}
 
-	private List<Edgel> findMarkers(BufferedImage image) {
-		List<Edgel> edgels = new ArrayList<Edgel>();
-		int height = image.getHeight();
-		int width = image.getWidth();
-		for (int y = 2; y < height - 3; y += REGION_DIMENSION) {
-			for (int x = 2; x < width - 3; x += REGION_DIMENSION) {
-				int left = Math.min(REGION_DIMENSION, width - x - 3);
-				int top = Math.min(REGION_DIMENSION, height - y - 3);
-				List<Edgel> regionEdgels = findEdgels(image, x, y, left, top);
-				edgels.addAll(regionEdgels);
-			}
-		}
-		System.out.println(edgels.size());
-		return edgels;
-	}
+//	private List<Edgel> findMarkers(BufferedImage image) {
+//		List<Edgel> edgels = new ArrayList<Edgel>();
+//		int height = image.getHeight();
+//		int width = image.getWidth();
+//		for (int y = 2; y < height - 3; y += REGION_DIMENSION) {
+//			for (int x = 2; x < width - 3; x += REGION_DIMENSION) {
+//				int left = Math.min(REGION_DIMENSION, width - x - 3);
+//				int top = Math.min(REGION_DIMENSION, height - y - 3);
+//				List<Edgel> regionEdgels = findEdgels(image, x, y, left, top);
+//				edgels.addAll(regionEdgels);
+//			}
+//		}
+//		System.out.println(edgels.size());
+//		return edgels;
+//	}
 
-	public List<Marker> findMarkersFinal(BufferedImage image) {
+	public List<Marker> findMarkers(BufferedImage image) {
 		List<Edgel> edgels = new ArrayList<Edgel>();
 		List<LineSegment> segments = new ArrayList<LineSegment>();
 		int height = image.getHeight();
@@ -272,7 +273,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			int x = (int) segment.getStart().getX() - dx;
 			int y = (int) segment.getEnd().getY() - dy;
 			if (imageContains(image, x, y)) {
-				composites = getRGBComposites(image, x, y);
+				composites = ImageOperations.getRGBComposites(image, x, y);
 				if (composites[0] > WHITETRESHOLD && composites[1] > WHITETRESHOLD && composites[2] > WHITETRESHOLD) {
 					segment.setStartCorner(true);
 				}
@@ -280,7 +281,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			x = (int) segment.getEnd().getX() + dx;
 			y = (int) segment.getEnd().getY() + dy;
 			if (imageContains(image, x, y)) {
-				composites = getRGBComposites(image, x, y);
+				composites = ImageOperations.getRGBComposites(image, x, y);
 				if (composites[0] > WHITETRESHOLD && composites[1] > WHITETRESHOLD && composites[2] > WHITETRESHOLD) {
 					segment.setEndCorner(true);
 				}
@@ -368,15 +369,15 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			int yPlusNorm = (int) (point.getY() + normal.getY());
 			int xMinusNorm = (int) (point.getX() - normal.getX());
 			int yMinusNorm = (int) (point.getY() - normal.getY());
-			merge = imageContains(image, x, y) && applyEdgeKernelX(image, x, y) >= TRESHOLD / 2;
-			merge |= imageContains(image, x, y) && applyEdgeKernelY(image, x, y) >= TRESHOLD / 2;
+			merge = imageContains(image, x, y) && DerivativeGaussianKernel.applyEdgeKernelX(image, x, y) >= TRESHOLD / 2;
+			merge |= imageContains(image, x, y) && DerivativeGaussianKernel.applyEdgeKernelY(image, x, y) >= TRESHOLD / 2;
 			if (merge) {
-				merge = imageContains(image, x, y) && Vector2d.dot(calculateSobel(image, x, y), gradient) > 0.38; // zmienna
+				merge = imageContains(image, x, y) && Vector2d.dot(ImageOperations.calculateSobel(image, x, y), gradient) > 0.38; // zmienna
 				if (!merge) {
-					merge = imageContains(image, xPlusNorm, yPlusNorm) && Vector2d.dot(calculateSobel(image, xPlusNorm, yPlusNorm), gradient) > 0.38;
+					merge = imageContains(image, xPlusNorm, yPlusNorm) && Vector2d.dot(ImageOperations.calculateSobel(image, xPlusNorm, yPlusNorm), gradient) > 0.38;
 				}
 				if (!merge) {
-					merge = imageContains(image, xMinusNorm, yMinusNorm) && Vector2d.dot(calculateSobel(image, xMinusNorm, yMinusNorm), gradient) > 0.38;
+					merge = imageContains(image, xMinusNorm, yMinusNorm) && Vector2d.dot(ImageOperations.calculateSobel(image, xMinusNorm, yMinusNorm), gradient) > 0.38;
 				}
 			}
 		}
@@ -465,33 +466,29 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		for (int y = 0; y < height; y += SCAN_LINE_DIMENSION) {
 			int[][] colorArray = prepareColorArrayForX(image, left, top + y);
 			int edgeValue, prevEdgeValue = 0, prevEdgeValue2 = 0;
-			// Shiftowanie szybsze od wyci¹gania wszystkich kolorów co iteracje?
 			for (int x = 0; x < width; x++, leftShiftArray(colorArray)) {
-				colorArray[colorArray.length - 1] = getRGBComposites(image, left + x + 2, top + y);
-				int[] edgeValues = applyEdgeKernel(colorArray);
+				colorArray[colorArray.length - 1] = ImageOperations.getRGBComposites(image, left + x + 2, top + y);
+				int[] edgeValues = DerivativeGaussianKernel.applyEdgeKernel(colorArray);
 				if (edgeValues[0] > TRESHOLD && edgeValues[1] > TRESHOLD && edgeValues[2] > TRESHOLD)
 					edgeValue = edgeValues[0];
 				else
 					edgeValue = 0;
 				if (prevEdgeValue > 0 && prevEdgeValue > prevEdgeValue2 && prevEdgeValue > edgeValue) {
 					Edgel edgel = new Edgel(left + x - 1, top + y);
-					edgel.setDirection(calculateSobel(image, (int) Math.round(edgel.getX()), (int) Math.round(edgel.getY())));
+					edgel.setDirection(ImageOperations.calculateSobel(image, (int) Math.round(edgel.getX()), (int) Math.round(edgel.getY())));
 					foundEdgels.add(edgel);
 				}
 				prevEdgeValue2 = prevEdgeValue;
 				prevEdgeValue = edgeValue;
 			}
 		}
-		// robimy to samo dla vertical, mozna by jakos to zrobic funkcja czy
-		// cos, ale w tym momencie nie wiem jak, wiec copy paste :p
 
-		// Shiftowanie szybsze od wyci¹gania wszystkich kolorów co iteracje?
 		for (int x = 0; x < width; x += SCAN_LINE_DIMENSION) {
 			int[][] colorArray = prepareColorArrayForY(image, left + x, top);
 			int edgeValue, prevEdgeValue = 0, prevEdgeValue2 = 0;
 			for (int y = 0; y < height; y++, leftShiftArray(colorArray)) {
-				colorArray[colorArray.length - 1] = getRGBComposites(image, left + x, top + y + 2);
-				int[] edgeValues = applyEdgeKernel(colorArray);
+				colorArray[colorArray.length - 1] = ImageOperations.getRGBComposites(image, left + x, top + y + 2);
+				int[] edgeValues = DerivativeGaussianKernel.applyEdgeKernel(colorArray);
 				if (edgeValues[0] > TRESHOLD && edgeValues[1] > TRESHOLD && edgeValues[2] > TRESHOLD)
 					edgeValue = edgeValues[0];
 				else
@@ -499,7 +496,7 @@ public class DesktopMarkerFinder implements MarkerFinder {
 				if (prevEdgeValue > 0 && prevEdgeValue > prevEdgeValue2 && prevEdgeValue > edgeValue) {
 					Edgel edgel = new Edgel(left + x, top + y - 1);
 
-					edgel.setDirection(calculateSobel(image, (int) edgel.getX(), (int) edgel.getY()));
+					edgel.setDirection(ImageOperations.calculateSobel(image, (int) edgel.getX(), (int) edgel.getY()));
 					foundEdgels.add(edgel);
 				}
 				prevEdgeValue2 = prevEdgeValue;
@@ -509,23 +506,10 @@ public class DesktopMarkerFinder implements MarkerFinder {
 		return foundEdgels;
 	}
 
-	private int[] getRGBComposites(BufferedImage image, int x, int y) {
-		int[] composites = new int[3];
-		int rgb = image.getRGB(x, y);
-		composites[0] = (rgb >> RED_SHIFT) & 0x0ff; // red
-		composites[1] = (rgb >> GREEN_SHIFT) & 0x0ff; // green
-		composites[2] = (rgb) & 0x0ff; // blue
-		return composites;
-	}
-
-	private int getRGBComposite(BufferedImage image, int x, int y, int color) {
-		return (image.getRGB(x, y) >> color) & 0x0ff;
-	}
-
 	private int[][] prepareColorArrayForX(BufferedImage image, int x, int y) {
 		int[][] colorArray = new int[5][3]; // magicNumbers
 		for (int i = 0; i < colorArray.length - 1; i++) {
-			colorArray[i] = getRGBComposites(image, x - 2 + 1 * i, y);
+			colorArray[i] = ImageOperations.getRGBComposites(image, x - 2 + 1 * i, y);
 		}
 		return colorArray;
 	}
@@ -533,64 +517,13 @@ public class DesktopMarkerFinder implements MarkerFinder {
 	private int[][] prepareColorArrayForY(BufferedImage image, int x, int y) {
 		int[][] colorArray = new int[5][3]; // magicNumbers
 		for (int i = 0; i < colorArray.length - 1; i++) {
-			colorArray[i] = getRGBComposites(image, x, y - 2 + 1 * i);
+			colorArray[i] = ImageOperations.getRGBComposites(image, x, y - 2 + 1 * i);
 		}
 		return colorArray;
 	}
 
 	private void leftShiftArray(int[][] array) {
-		// bez forowania dla celów szybkoœciowych? (raczej ma³y boost)
 		for (int i = 0; i < array.length - 1; i++)
 			array[i] = array[i + 1];
-	}
-
-	private int[] applyEdgeKernel(int[][] array) {
-		int[] values = new int[3];
-		for (int i = 0; i < values.length; i++) {
-			values[i] = FILTER_VECTOR[0] * array[0][i];
-			values[i] += FILTER_VECTOR[1] * array[1][i];
-			values[i] += FILTER_VECTOR[3] * array[3][i];
-			values[i] += FILTER_VECTOR[4] * array[4][i];
-			values[i] = Math.abs(values[i]);
-		}
-		return values;
-	}
-
-	private int applyEdgeKernelX(BufferedImage image, int x, int y) {
-		int shift = BLUE_SHIFT;
-		int value = FILTER_VECTOR[0] * getRGBComposite(image, x, y - 2, shift);
-		value += FILTER_VECTOR[1] * getRGBComposite(image, x, y - 1, shift);
-		value += FILTER_VECTOR[3] * getRGBComposite(image, x, y + 1, shift);
-		value += FILTER_VECTOR[4] * getRGBComposite(image, x, y + 2, shift);
-		return Math.abs(value);
-	}
-
-	private int applyEdgeKernelY(BufferedImage image, int x, int y) {
-		int shift = BLUE_SHIFT;
-		int value = FILTER_VECTOR[0] * getRGBComposite(image, x - 2, y, shift);
-		value += FILTER_VECTOR[1] * getRGBComposite(image, x - 1, y, shift);
-		value += FILTER_VECTOR[3] * getRGBComposite(image, x + 1, y, shift);
-		value += FILTER_VECTOR[4] * getRGBComposite(image, x + 2, y, shift);
-		return Math.abs(value);
-	}
-
-	private Vector2d calculateSobel(BufferedImage image, int x, int y) {
-		int shift = BLUE_SHIFT;
-		int gx = getRGBComposite(image, x - 1, y - 1, shift);
-		gx += 2 * getRGBComposite(image, x, y - 1, shift);
-		gx += getRGBComposite(image, x + 1, y - 1, shift);
-		gx -= getRGBComposite(image, x - 1, y + 1, shift);
-		gx -= 2 * getRGBComposite(image, x, y + 1, shift);
-		gx -= getRGBComposite(image, x + 1, y + 1, shift);
-
-		int gy = getRGBComposite(image, x - 1, y - 1, shift);
-		gy += 2 * getRGBComposite(image, x - 1, y, shift);
-		gy += getRGBComposite(image, x - 1, y + 1, shift);
-		gy -= getRGBComposite(image, x + 1, y - 1, shift);
-		gy -= 2 * getRGBComposite(image, x + 1, y, shift);
-		gy -= getRGBComposite(image, x + 1, y + 1, shift);
-		Vector2d vec = new Vector2d(gx, gy);
-		vec.normalize();
-		return vec;
-	}
+	}	
 }

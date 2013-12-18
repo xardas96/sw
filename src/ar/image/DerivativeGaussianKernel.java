@@ -9,9 +9,6 @@ import java.util.List;
 
 public abstract class DerivativeGaussianKernel {
 	private static final int[] FILTER_VECTOR = {-3,-5,0,5,3};
-	public static final int RED_SHIFT = 16;
-	public static final int GREEN_SHIFT = 8;
-	public static final int BLUE_SHIFT = 0;
 	
 	public static int[] applyEdgeKernel(int[][] array) {
 		int[] values = new int[3];
@@ -26,34 +23,36 @@ public abstract class DerivativeGaussianKernel {
 	}
 
 	public static int applyEdgeKernelX(BufferedImage image, int x, int y) {
-		int value = FILTER_VECTOR[0] * getRGBComposite(image, x, y - 2, RED_SHIFT);
-		value += FILTER_VECTOR[1] * getRGBComposite(image, x, y - 1, RED_SHIFT);
-		value += FILTER_VECTOR[3] * getRGBComposite(image, x, y + 1, RED_SHIFT);
-		value += FILTER_VECTOR[4] * getRGBComposite(image, x, y + 2, RED_SHIFT);
+		int shift = ImageOperations.BLUE_SHIFT;
+		int value = FILTER_VECTOR[0] * ImageOperations.getRGBComposite(image, x, y - 2, shift );
+		value += FILTER_VECTOR[1] * ImageOperations.getRGBComposite(image, x, y - 1, shift );
+		value += FILTER_VECTOR[3] * ImageOperations.getRGBComposite(image, x, y + 1, shift );
+		value += FILTER_VECTOR[4] * ImageOperations.getRGBComposite(image, x, y + 2, shift );
 		return Math.abs(value);
 	}
 
 	public static int applyEdgeKernelY(BufferedImage image, int x, int y) {
-		int value = FILTER_VECTOR[0] * getRGBComposite(image, x - 2, y, RED_SHIFT);
-		value += FILTER_VECTOR[1] * getRGBComposite(image, x - 1, y, RED_SHIFT);
-		value += FILTER_VECTOR[3] * getRGBComposite(image, x + 1, y, RED_SHIFT);
-		value += FILTER_VECTOR[4] * getRGBComposite(image, x + 2, y, RED_SHIFT);
+		int shift = ImageOperations.BLUE_SHIFT;
+		int value = FILTER_VECTOR[0] * ImageOperations.getRGBComposite(image, x - 2, y, shift );
+		value += FILTER_VECTOR[1] * ImageOperations.getRGBComposite(image, x - 1, y, shift );
+		value += FILTER_VECTOR[3] * ImageOperations.getRGBComposite(image, x + 1, y,shift );
+		value += FILTER_VECTOR[4] * ImageOperations.getRGBComposite(image, x + 2, y, shift );
 		return Math.abs(value);
 	}
 	
 	public static int applyEdgeKernelX(BufferedImage image, int x, int y, int shift) {
-		int value = FILTER_VECTOR[0] * getRGBComposite(image, x, y - 2, shift);
-		value += FILTER_VECTOR[1] * getRGBComposite(image, x, y - 1, shift);
-		value += FILTER_VECTOR[3] * getRGBComposite(image, x, y + 1, shift);
-		value += FILTER_VECTOR[4] * getRGBComposite(image, x, y + 2, shift);
+		int value = FILTER_VECTOR[0] * ImageOperations.getRGBComposite(image, x, y - 2, shift);
+		value += FILTER_VECTOR[1] * ImageOperations.getRGBComposite(image, x, y - 1, shift);
+		value += FILTER_VECTOR[3] * ImageOperations.getRGBComposite(image, x, y + 1, shift);
+		value += FILTER_VECTOR[4] * ImageOperations.getRGBComposite(image, x, y + 2, shift);
 		return Math.abs(value);
 	}
 	
 	public static int applyEdgeKernelY(BufferedImage image, int x, int y, int shift) {
-		int value = FILTER_VECTOR[0] * getRGBComposite(image, x - 2, y, shift);
-		value += FILTER_VECTOR[1] * getRGBComposite(image, x - 1, y, shift);
-		value += FILTER_VECTOR[3] * getRGBComposite(image, x + 1, y, shift);
-		value += FILTER_VECTOR[4] * getRGBComposite(image, x + 2, y, shift);
+		int value = FILTER_VECTOR[0] * ImageOperations.getRGBComposite(image, x - 2, y, shift);
+		value += FILTER_VECTOR[1] * ImageOperations.getRGBComposite(image, x - 1, y, shift);
+		value += FILTER_VECTOR[3] * ImageOperations.getRGBComposite(image, x + 1, y, shift);
+		value += FILTER_VECTOR[4] * ImageOperations.getRGBComposite(image, x + 2, y, shift);
 		return Math.abs(value);
 	}
 	
@@ -63,7 +62,7 @@ public abstract class DerivativeGaussianKernel {
 		List<Point> points = new ArrayList<Point>();
 		for(int x = 0; x < image.getWidth(); x++){
 			for(int y = 2; y < image.getHeight()-3; y++){
-				pixelList.add(new int[]{applyEdgeKernelX(image, x, y, RED_SHIFT), applyEdgeKernelX(image, x, y, GREEN_SHIFT), applyEdgeKernelX(image, x, y, BLUE_SHIFT)});
+				pixelList.add(new int[]{applyEdgeKernelX(image, x, y, ImageOperations.RED_SHIFT), applyEdgeKernelX(image, x, y, ImageOperations.GREEN_SHIFT), applyEdgeKernelX(image, x, y, ImageOperations.BLUE_SHIFT)});
 				points.add(new Point(x, y));
 			}
 		}
@@ -92,7 +91,7 @@ public abstract class DerivativeGaussianKernel {
 		List<Point> points = new ArrayList<Point>();
 		for(int x = 2; x < image.getWidth()-3; x++){
 			for(int y = 0; y < image.getHeight(); y++){
-				pixelList.add(new int[]{applyEdgeKernelY(image, x, y, RED_SHIFT), applyEdgeKernelY(image, x, y, GREEN_SHIFT), applyEdgeKernelY(image, x, y, BLUE_SHIFT)});
+				pixelList.add(new int[]{applyEdgeKernelY(image, x, y, ImageOperations.RED_SHIFT), applyEdgeKernelY(image, x, y, ImageOperations.GREEN_SHIFT), applyEdgeKernelY(image, x, y,ImageOperations.BLUE_SHIFT)});
 				points.add(new Point(x, y));
 			}
 		}
@@ -113,18 +112,5 @@ public abstract class DerivativeGaussianKernel {
 			result.setRGB((int) points.get(i).getX(), (int) points.get(i).getY(), new Color((int) (tab[0]/max*255), (int) (tab[1]/max*255),(int) (tab[2]/max*255)).getRGB());
 		}
 		return result;
-	}
-	
-	public static int[] getRGBComposites(BufferedImage image, int x, int y) {
-		int[] composites = new int[3];
-		int rgb = image.getRGB(x, y);
-		composites[0] = (rgb >> RED_SHIFT) & 0x0ff; // red
-		composites[1] = (rgb >> GREEN_SHIFT) & 0x0ff; // green
-		composites[2] = (rgb) & 0x0ff; // blue
-		return composites;
-	}
-
-	public static int getRGBComposite(BufferedImage image, int x, int y, int color) {
-		return (image.getRGB(x, y) >> color) & 0x0ff;
 	}
 }
