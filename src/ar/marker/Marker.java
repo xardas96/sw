@@ -79,6 +79,10 @@ public class Marker {
 		corner4 = c;
 	}
 	
+	public Vector2d[] getCornerArray(){
+		return new Vector2d[]{corner1, corner2, corner3, corner4};
+	}
+	
 
 	/**
 	 * Checks if m2 is inside m1

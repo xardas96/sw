@@ -24,9 +24,12 @@ import ar.code.CodeDecryptor;
 import ar.code.CodeRetreiver;
 import ar.image.DerivativeGaussianKernel;
 import ar.image.ImageOperations;
+import ar.marker.CornerMarkerFilter;
 import ar.marker.InsideMarkerFilter;
+import ar.marker.LengthMarkerFilter;
 import ar.marker.Marker;
 import ar.marker.MarkerFilter;
+import ar.marker.MemoryMarkerFilter;
 import ar.orientation.CornerBasedOrientationFinder;
 import ar.perspective.PerspectiveFinder;
 import ar.utils.Vector2d;
@@ -110,6 +113,9 @@ public class Main {
 
 		timer.start();
 		MarkerFilter insideFilter = new InsideMarkerFilter();
+		MarkerFilter cornerFilter = new CornerMarkerFilter();
+		MarkerFilter lengthFilter = new LengthMarkerFilter();
+		MarkerFilter memoryFilter = new MemoryMarkerFilter(new MarkerFilter[]{cornerFilter, lengthFilter});
 		while (true) {
 			BufferedImage img = webcam.getImage();
 			if(img != null){
@@ -117,6 +123,7 @@ public class Main {
 				List<Marker> markers = finder.findMarkers(img, debugImage);
 				mf.setImage(debugImage);
 				markers = insideFilter.filterMarkers(markers, img);
+				markers = memoryFilter.filterMarkers(markers, img);
 				try{
 				if (markers != null && !markers.isEmpty()) {
 					markers = new CornerBasedOrientationFinder().setMarkerOrinetation(markers, img);
