@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 
@@ -10,14 +11,18 @@ import javax.swing.JScrollPane;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -8026416994513756565L;
-	private DrawPanel panel;
+	private WebcamImageRenderer panel;
 	private JLabel fpsLabel;
 	private int fpsCounter;
 
-	public MainFrame(Image image, String title) {
-		panel = new DrawPanel(image);
+	public MainFrame(Image image, String title, boolean ar) {
+		if (ar) {
+			panel = new ArPanel();
+		} else {
+			panel = new DrawPanel(image);
+		}
 		fpsLabel = new JLabel();
-		JScrollPane pane = new JScrollPane(panel);
+		JScrollPane pane = new JScrollPane((Component) panel);
 		setLayout(new BorderLayout());
 		add(pane, BorderLayout.CENTER);
 		add(fpsLabel, BorderLayout.SOUTH);
@@ -29,7 +34,7 @@ public class MainFrame extends JFrame {
 	public void setImage(Image image) {
 		fpsCounter++;
 		panel.setImage(image);
-		panel.repaint();
+		((Component) panel).repaint();
 	}
 
 	public void setFPS() {

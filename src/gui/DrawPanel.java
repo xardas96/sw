@@ -6,7 +6,7 @@ import java.awt.Image;
 
 import javax.swing.JPanel;
 
-public class DrawPanel extends JPanel {
+public class DrawPanel extends JPanel implements WebcamImageRenderer {
 	private static final long serialVersionUID = -950718375757439961L;
 	private Image image;
 
@@ -23,6 +23,7 @@ public class DrawPanel extends JPanel {
 		}
 	}
 
+	@Override
 	public void setImage(Image image) {
 		this.image = image;
 	}
