@@ -17,6 +17,7 @@ import javax.swing.Timer;
 import Jama.Matrix;
 import ar.DesktopMarkerFinder;
 import ar.MarkerFinder;
+import ar.camera.CameraPoseFinder;
 import ar.code.CodeDecryptor;
 import ar.code.CodeRetreiver;
 import ar.image.ImageOperations;
@@ -148,6 +149,9 @@ public class Main {
 							Marker subMarker = new Marker(marker.getCorner1().subtract(minV), marker.getCorner2().subtract(minV), marker.getCorner3().subtract(minV), marker.getCorner4().subtract(minV));
 							PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
 							Matrix m = pFinder.findPerspectiveMatrix(subMarker);
+							CameraPoseFinder poseFinder = new CameraPoseFinder();
+							Matrix camPose = poseFinder.findCameraPose(m);
+							System.out.println(camPose); //TODO
 							BufferedImage markerImage = pFinder.transformBufferedImage(m, subImage, MarkerFinder.MARKER_DIMENSION);
 							CodeRetreiver cr = new CodeRetreiver();
 							int[] code = cr.retreiveCode(markerImage);
