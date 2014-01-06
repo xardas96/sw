@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.media.j3d.BranchGroup;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -26,6 +27,7 @@ import ar.marker.LengthMarkerFilter;
 import ar.marker.Marker;
 import ar.marker.MarkerFilter;
 import ar.marker.MemoryMarkerFilter;
+import ar.models.ModelLibrary;
 import ar.orientation.CornerBasedOrientationFinder;
 import ar.perspective.PerspectiveFinder;
 import ar.posit.Posit;
@@ -36,6 +38,7 @@ import com.github.sarxos.webcam.Webcam;
 public class Main {
 
 	public static void main(String[] args) throws Exception {
+		ModelLibrary.init();
 		// testMarkerFinder("fixedTest.png");
 		testCamera(new Dimension(320, 240));
 		// testMarkerPerspective("testowy.jpg");
@@ -125,7 +128,7 @@ public class Main {
 		MarkerFilter memoryFilter = new MemoryMarkerFilter(new MarkerFilter[] { cornerFilter, lengthFilter });
 		
 		Posit posit = new Posit(cameraDimension.getWidth());
-		
+
 		while (true) {
 			BufferedImage img = webcam.getImage();
 			if (img != null) {
@@ -155,7 +158,14 @@ public class Main {
 							Marker subMarker = new Marker(marker.getCorner1().subtract(minV), marker.getCorner2().subtract(minV), marker.getCorner3().subtract(minV), marker.getCorner4().subtract(minV));
 							PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
 							Matrix m = pFinder.findPerspectiveMatrix(subMarker);
+							BufferedImage markerImage = pFinder.transformBufferedImage(m, subImage, MarkerFinder.MARKER_DIMENSION);
+							CodeRetreiver cr = new CodeRetreiver();
+							int[] code = cr.retreiveCode(markerImage);
+							mf2.setImage(markerImage);
+							mf2.setFPS(CodeDecryptor.decryptCode(code));
 							//TODO
+							BranchGroup model = ModelLibrary.getModel(CodeDecryptor.decryptCode(code));
+							mf3.setModel(model);
 							posit.calculatePosit(marker);
 							float[] translationVector = posit.getTranslationVector();
 							float[] rotationMatrix = posit.getRotationMatrix();
@@ -163,12 +173,9 @@ public class Main {
 						    System.out.println("Rotation Matrix: "+rotationMatrix[5]);
 							mf3.setTransform(posit.getTranslationVector());
 							//TODO
-							BufferedImage markerImage = pFinder.transformBufferedImage(m, subImage, MarkerFinder.MARKER_DIMENSION);
-							CodeRetreiver cr = new CodeRetreiver();
-							int[] code = cr.retreiveCode(markerImage);
-							mf2.setImage(markerImage);
-							mf2.setFPS(CodeDecryptor.decryptCode(code));
 						}
+					} else {
+						mf3.removeModel();
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

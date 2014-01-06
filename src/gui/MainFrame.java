@@ -5,9 +5,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 
+import javax.media.j3d.BranchGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+
+import com.sun.j3d.loaders.Scene;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -8026416994513756565L;
@@ -35,8 +38,20 @@ public class MainFrame extends JFrame {
 
 	public void setTransform(float[] translate) {
 		if (ar) {
-//			((ArPanel) panel).setTrans(translate);
-//			((ArPanel) panel).createSceneGraph();
+			// ((ArPanel) panel).setTrans(translate);
+			// ((ArPanel) panel).createSceneGraph();
+		}
+	}
+
+	public void setModel(BranchGroup model) {
+		if (ar) {
+			((ArPanel) panel).setModel(model);
+		}
+	}
+
+	public void removeModel() {
+		if (ar) {
+			((ArPanel) panel).removeModel();
 		}
 	}
 
@@ -50,7 +65,7 @@ public class MainFrame extends JFrame {
 		fpsLabel.setText(fpsCounter + " FPS");
 		fpsCounter = 0;
 	}
-	
+
 	public void setFPS(int value) {
 		fpsLabel.setText("Decoded: " + value);
 	}
