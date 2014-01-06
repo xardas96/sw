@@ -14,8 +14,9 @@ import javax.media.j3d.ImageComponent2D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.swing.JPanel;
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
 
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
@@ -27,6 +28,8 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 	private BranchGroup scene;
 	private BranchGroup content;
 	private BranchGroup model;
+	private Transform3D rotateTransform;
+	private TransformGroup tg;
 	private boolean sizeSet;
 
 	public ArPanel() {
@@ -34,7 +37,16 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		canvas3D = new Canvas3D(config);
 		setLayout(new BorderLayout());
 		add(canvas3D, BorderLayout.CENTER);
+
+		content = new BranchGroup();
+		content.setCapability(BranchGroup.ALLOW_DETACH);
+
+		tg = new TransformGroup();
+		tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+		tg.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+
 		createSceneGraph();
+
 		universe = new SimpleUniverse(canvas3D);
 		universe.getViewingPlatform().setNominalViewingTransform();
 		universe.addBranchGraph(scene);
@@ -50,18 +62,19 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		}
 	}
 
+	public void setTranslationAndRotation(float[] translate, float[] rotate) {
+		rotateTransform = createTransform(translate, rotate);
+		tg.setTransform(rotateTransform);
+	}
+
 	public void setModel(BranchGroup model) {
 		if (model != null && !model.equals(this.model)) {
 			this.model = model;
-			if(content == null) {
-				content = new BranchGroup();
-				content.setCapability(BranchGroup.ALLOW_DETACH);
-				Transform3D rotate = createTransform();
-				TransformGroup tg = new TransformGroup();
-				tg.setTransform(rotate);
-				tg.addChild(model);
-				content.addChild(tg);
-			}
+			this.model.setCapability(BranchGroup.ALLOW_DETACH);
+			content.removeChild(tg);
+			tg.removeAllChildren();
+			tg.addChild(model);
+			content.addChild(tg);
 			scene.addChild(content);
 		}
 	}
@@ -69,27 +82,18 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 	public void removeModel() {
 		if (model != null) {
 			scene.removeChild(content);
+			tg.removeChild(model);
 			model = null;
 		}
 	}
 
-	// TODO
-	private Transform3D createTransform() {
-		// Transform3D transform = new Transform3D();
-		// transform.setTranslation(new Vector3d(0.0, 0.0, 2.0));
-		// return transform;
-		Transform3D rotate = new Transform3D();
-		Transform3D tempRotate = new Transform3D();
-		Transform3D scale = new Transform3D();
+	private Transform3D createTransform(float[] translate, float[] rotate) {
+		Transform3D rotateTransform = new Transform3D();
+		rotateTransform.setRotation(new Matrix3f(rotate));
 		Transform3D vector = new Transform3D();
-		rotate.rotX(Math.PI / 4.0);
-		tempRotate.rotY(Math.PI / 20.0);
-		scale.setScale(0.5d);
-		vector.set(new Vector3d(0.0, 1.5, 2.0));
-		rotate.mul(tempRotate);
-		rotate.mul(scale);
-		rotate.mul(vector);
-		return rotate;
+		vector.set(new Vector3f(rotate));
+		rotateTransform.mul(vector);
+		return rotateTransform;
 	}
 
 	private void createSceneGraph() {

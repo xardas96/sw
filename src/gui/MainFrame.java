@@ -10,8 +10,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
-import com.sun.j3d.loaders.Scene;
-
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -8026416994513756565L;
 	private WebcamImageRenderer panel;
@@ -36,10 +34,9 @@ public class MainFrame extends JFrame {
 		setTitle(title);
 	}
 
-	public void setTransform(float[] translate) {
+	public void setTransform(float[] translate, float[] rotate) {
 		if (ar) {
-			// ((ArPanel) panel).setTrans(translate);
-			// ((ArPanel) panel).createSceneGraph();
+			((ArPanel) panel).setTranslationAndRotation(translate, rotate);
 		}
 	}
 

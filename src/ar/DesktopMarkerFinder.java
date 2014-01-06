@@ -493,6 +493,5 @@ public class DesktopMarkerFinder implements MarkerFinder {
 			g.drawLine((int) marker.getCorner4().getX(), (int) marker.getCorner4().getY(), (int) marker.getCorner1().getX(), (int) marker.getCorner1().getY());
 		}
 		return image;
-	}
-	
+	}	
 }
