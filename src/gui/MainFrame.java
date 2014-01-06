@@ -14,8 +14,10 @@ public class MainFrame extends JFrame {
 	private WebcamImageRenderer panel;
 	private JLabel fpsLabel;
 	private int fpsCounter;
+	private boolean ar;
 
 	public MainFrame(Image image, String title, boolean ar) {
+		this.ar = ar;
 		if (ar) {
 			panel = new ArPanel();
 		} else {
@@ -26,9 +28,16 @@ public class MainFrame extends JFrame {
 		setLayout(new BorderLayout());
 		add(pane, BorderLayout.CENTER);
 		add(fpsLabel, BorderLayout.SOUTH);
-		setSize(new Dimension(700, 700));
+		setSize(new Dimension(350, 350));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle(title);
+	}
+
+	public void setTransform(float[] translate) {
+		if (ar) {
+//			((ArPanel) panel).setTrans(translate);
+//			((ArPanel) panel).createSceneGraph();
+		}
 	}
 
 	public void setImage(Image image) {
@@ -40,5 +49,9 @@ public class MainFrame extends JFrame {
 	public void setFPS() {
 		fpsLabel.setText(fpsCounter + " FPS");
 		fpsCounter = 0;
+	}
+	
+	public void setFPS(int value) {
+		fpsLabel.setText("Decoded: " + value);
 	}
 }
