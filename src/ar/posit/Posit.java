@@ -64,7 +64,7 @@ public class Posit {
 	public double[] getTranslate() {
 		translate[0] = translate[0] / cameraDimension.getWidth();
 		translate[1] = -(translate[1] / cameraDimension.getHeight());
-		translate[2] = -(translate[2] / 100) + 1;
+		translate[2] = -(translate[2] / 100);
 		return translate;
 	}
 	

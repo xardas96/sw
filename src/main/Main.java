@@ -40,7 +40,7 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		ModelLibrary.init();
-		CameraIntristics.loadInstisticsFromFile("out_camera_data.xml");
+		CameraIntristics.loadInstisticsFromFile("out_camera_data_320.xml");
 		// testMarkerFinder("fixedTest.png");
 		testCamera(new Dimension(320, 240));
 		// testMarkerPerspective("testowy.jpg");
