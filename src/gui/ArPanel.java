@@ -31,22 +31,21 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 	private Transform3D rotateTransform;
 	private TransformGroup tg;
 	private boolean sizeSet;
+	private Transform3D opencvCorrection;
 
 	public ArPanel() {
 		GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 		canvas3D = new Canvas3D(config);
 		setLayout(new BorderLayout());
 		add(canvas3D, BorderLayout.CENTER);
-
 		content = new BranchGroup();
 		content.setCapability(BranchGroup.ALLOW_DETACH);
-
 		tg = new TransformGroup();
 		tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		tg.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
-
 		createSceneGraph();
-
+		opencvCorrection = new Transform3D();
+		opencvCorrection.rotX(Math.PI/2);
 		universe = new SimpleUniverse(canvas3D);
 		universe.addBranchGraph(scene);
 	}
@@ -92,6 +91,7 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		Transform3D vector = new Transform3D();
 		vector.set(new Vector3d(translate));
 		rotateTransform.mul(vector);
+		rotateTransform.mul(opencvCorrection);
 		return rotateTransform;
 	}
 
