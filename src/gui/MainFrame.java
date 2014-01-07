@@ -34,7 +34,7 @@ public class MainFrame extends JFrame {
 		setTitle(title);
 	}
 
-	public void setTransform(float[] translate, float[] rotate) {
+	public void setTransform(double[] translate, double[] rotate) {
 		if (ar) {
 			((ArPanel) panel).setTranslationAndRotation(translate, rotate);
 		}

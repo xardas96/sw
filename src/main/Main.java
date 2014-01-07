@@ -18,6 +18,7 @@ import javax.swing.Timer;
 import Jama.Matrix;
 import ar.DesktopMarkerFinder;
 import ar.MarkerFinder;
+import ar.camera.CameraIntristics;
 import ar.code.CodeDecryptor;
 import ar.code.CodeRetreiver;
 import ar.image.ImageOperations;
@@ -39,6 +40,7 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		ModelLibrary.init();
+		CameraIntristics.loadInstisticsFromFile("out_camera_data.xml");
 		// testMarkerFinder("fixedTest.png");
 		testCamera(new Dimension(320, 240));
 		// testMarkerPerspective("testowy.jpg");
@@ -126,7 +128,7 @@ public class Main {
 		MarkerFilter lengthFilter = new LengthMarkerFilter();
 		MarkerFilter memoryFilter = new MemoryMarkerFilter(new MarkerFilter[] { cornerFilter, lengthFilter });
 
-		Posit posit = new Posit(cameraDimension.getWidth());
+		Posit posit = new Posit(cameraDimension);
 
 		while (true) {
 			BufferedImage img = webcam.getImage();
@@ -162,18 +164,9 @@ public class Main {
 							int[] code = cr.retreiveCode(markerImage);
 							mf2.setImage(markerImage);
 							mf2.setFPS(CodeDecryptor.decryptCode(code));
-						
 							// TODO
 							posit.calculatePosit(marker);
-							float[] translationVector = posit.getTranslationVector();
-							float[] rotationMatrix = posit.getRotationMatrix();
-//							System.out.println("Translation: (" + translationVector[0]/cameraDimension.width + "," + translationVector[1]/cameraDimension.height + "," + translationVector[2] + ")");
-//							System.out.println("Rotation Matrix: " + rotationMatrix[5]);
-							float[] vec = new float[3];
-							vec[0] = translationVector[0]/cameraDimension.width;
-							vec[1] = -translationVector[1]/cameraDimension.height;
-							vec[2] = -translationVector[2]/100;
-							mf3.setTransform(vec, rotationMatrix);
+							mf3.setTransform(posit.getTranslate(), posit.getRotate());
 							BranchGroup model = ModelLibrary.getModel(CodeDecryptor.decryptCode(code));
 							mf3.setModel(model);
 							// TODO
