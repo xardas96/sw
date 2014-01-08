@@ -26,10 +26,10 @@ public class Posit {
 	public Posit(Dimension cameraDimension) {
 		this.cameraDimension = cameraDimension;
 		markerPoints = CvMat.create(4, 3);
-		markerPoints.put(0, 0, 0).put(0, 1, 0).put(0, 2, 0);
-		markerPoints.put(1, 0, MarkerFinder.MARKER_DIMENSION.width).put(1, 1, 0).put(1, 2, 0);
-		markerPoints.put(2, 0, MarkerFinder.MARKER_DIMENSION.width).put(2, 1, MarkerFinder.MARKER_DIMENSION.height).put(2, 2, 0);
-		markerPoints.put(3, 0, 0).put(3, 1, MarkerFinder.MARKER_DIMENSION.height).put(3, 2, 0);
+		markerPoints.put(0, 0, -MarkerFinder.MARKER_DIMENSION.width).put(0, 1, -MarkerFinder.MARKER_DIMENSION.width).put(0, 2, 0);
+		markerPoints.put(1, 0, MarkerFinder.MARKER_DIMENSION.width).put(1, 1, -MarkerFinder.MARKER_DIMENSION.width).put(1, 2, 0);
+		markerPoints.put(2, 0, MarkerFinder.MARKER_DIMENSION.width).put(2, 1, MarkerFinder.MARKER_DIMENSION.width).put(2, 2, 0);
+		markerPoints.put(3, 0, -MarkerFinder.MARKER_DIMENSION.width).put(3, 1, MarkerFinder.MARKER_DIMENSION.width).put(3, 2, 0);
 		imagePoints = CvMat.create(4, 2);
 		cameraIntristics = CvMat.create(3, 3);
 		cameraIntristics.put(CameraIntristics.getIntristics());
@@ -57,18 +57,23 @@ public class Posit {
 		solvePnP(markerPoints, this.imagePoints, cameraIntristics, distortion, rVec, tVec, false, ITERATIVE);
 		CvMat rMat = CvMat.create(3, 3);
 		cvRodrigues2(rVec, rMat, null);
-		translate = tVec.get();
+		translate = correctTranslate(tVec.get());
 		rotate = rMat.get();
 	}
 	
 	public double[] getTranslate() {
-		translate[0] = translate[0] / (cameraDimension.getWidth());
-		translate[1] = -(translate[1] / (cameraDimension.getHeight()));
-		translate[2] = -(translate[2] / 100);
 		return translate;
 	}
 	
 	public double[] getRotate() {
 		return rotate;
+	}
+	
+	private double[] correctTranslate(double[] translate) {
+		double[] newTranslate = new double[translate.length];
+		newTranslate[0] = translate[0] / (cameraDimension.getWidth()/2);
+		newTranslate[1] = -(translate[1] / (cameraDimension.getHeight()/2));
+		newTranslate[2] = -(translate[2] / 100);
+		return newTranslate;
 	}
 }
