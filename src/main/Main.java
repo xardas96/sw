@@ -166,7 +166,7 @@ public class Main {
 							mf2.setFPS(CodeDecryptor.decryptCode(code));
 							// TODO
 							posit.calculatePosit(marker);
-							mf3.setTransform(posit.getTranslate(), posit.getRotate());
+							mf3.setTransform(posit.getTranslate(), posit.getRotate(), 1.0);
 							BranchGroup model = ModelLibrary.getModel(CodeDecryptor.decryptCode(code));
 							mf3.setModel(model);
 							// TODO

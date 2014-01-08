@@ -6,6 +6,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
+import javax.media.j3d.AmbientLight;
 import javax.media.j3d.Background;
 import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
@@ -14,7 +15,9 @@ import javax.media.j3d.ImageComponent2D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.swing.JPanel;
+import javax.vecmath.Color3f;
 import javax.vecmath.Matrix3d;
+import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
@@ -31,7 +34,7 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 	private Transform3D rotateTransform;
 	private TransformGroup tg;
 	private boolean sizeSet;
-	private Transform3D opencvCorrection;
+	private Matrix3d opencvCorrection;
 
 	public ArPanel() {
 		GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
@@ -44,8 +47,7 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		tg.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
 		createSceneGraph();
-		opencvCorrection = new Transform3D();
-		opencvCorrection.rotX(Math.PI/2);
+		opencvCorrection = createOpenCVCorrectionMatrix();
 		universe = new SimpleUniverse(canvas3D);
 		universe.addBranchGraph(scene);
 	}
@@ -60,8 +62,8 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		}
 	}
 
-	public void setTranslationAndRotation(double[] translate, double[] rotate) {
-		rotateTransform = createTransform(translate, rotate);
+	public void setTranslationAndRotation(double[] translate, double[] rotate, double scale) {
+		rotateTransform = createTransform(translate, rotate, scale);
 		tg.setTransform(rotateTransform);
 	}
 
@@ -85,13 +87,14 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		}
 	}
 
-	private Transform3D createTransform(double[] translate, double[] rotate) {
+	private Transform3D createTransform(double[] translate, double[] rotate, double scale) {
 		Transform3D rotateTransform = new Transform3D();
-		rotateTransform.setRotation(new Matrix3d(rotate));
-		Transform3D vector = new Transform3D();
-		vector.set(new Vector3d(translate));
-		rotateTransform.mul(vector);
-		rotateTransform.mul(opencvCorrection);
+		Matrix3d rotationMatrix = new Matrix3d(rotate);
+//		rotationMatrix.mul(opencvCorrection);
+//		rotationMatrix.invert();
+		Vector3d translationVector = new Vector3d(translate);
+		Matrix4d mat = new Matrix4d(rotationMatrix, translationVector, scale);
+		rotateTransform.set(mat);
 		return rotateTransform;
 	}
 
@@ -104,7 +107,19 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		BoundingSphere b = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 320.0);
 		background.setApplicationBounds(b);
 		background.setCapability(Background.ALLOW_IMAGE_WRITE);
+		Color3f ambientColor = new Color3f(0f, 1.0f, 0f);
+		AmbientLight ambientLightNode = new AmbientLight(ambientColor);
+		ambientLightNode.setInfluencingBounds(b);
+		scene.addChild(ambientLightNode);
 		scene.addChild(background);
 		scene.compile();
+	}
+	
+	private Matrix3d createOpenCVCorrectionMatrix() {
+		Matrix3d correction = new Matrix3d();
+		Transform3D opencvCorrection = new Transform3D();
+		opencvCorrection.rotX(Math.PI/2);
+		opencvCorrection.get(correction);
+		return correction;
 	}
 }
