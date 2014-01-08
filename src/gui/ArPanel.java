@@ -90,8 +90,8 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 	private Transform3D createTransform(double[] translate, double[] rotate, double scale) {
 		Transform3D rotateTransform = new Transform3D();
 		Matrix3d rotationMatrix = new Matrix3d(rotate);
-//		rotationMatrix.mul(opencvCorrection);
-//		rotationMatrix.invert();
+		rotationMatrix.mul(opencvCorrection);
+		rotationMatrix.invert();
 		Vector3d translationVector = new Vector3d(translate);
 		Matrix4d mat = new Matrix4d(rotationMatrix, translationVector, scale);
 		rotateTransform.set(mat);
@@ -114,11 +114,11 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		scene.addChild(background);
 		scene.compile();
 	}
-	
+
 	private Matrix3d createOpenCVCorrectionMatrix() {
 		Matrix3d correction = new Matrix3d();
 		Transform3D opencvCorrection = new Transform3D();
-		opencvCorrection.rotX(Math.PI/2);
+		opencvCorrection.rotX(-Math.PI / 4);
 		opencvCorrection.get(correction);
 		return correction;
 	}
