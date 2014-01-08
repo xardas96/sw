@@ -58,7 +58,7 @@ public class Posit {
 		CvMat rMat = CvMat.create(3, 3);
 		cvRodrigues2(rVec, rMat, null);
 		translate = correctTranslate(tVec.get());
-		rotate = rMat.get();
+		rotate = correctRotate(rMat.get());
 	}
 	
 	public double[] getTranslate() {
@@ -75,5 +75,13 @@ public class Posit {
 		newTranslate[1] = -(translate[1] / (cameraDimension.getHeight()/2));
 		newTranslate[2] = -(translate[2] / 100);
 		return newTranslate;
+	}
+	
+	private double[] correctRotate(double[] rotate) {
+		double[] newRotate = rotate;
+		for(int i = 3; i<6; i++) {
+			newRotate[i] = -newRotate[i];
+		}
+		return newRotate;
 	}
 }
