@@ -91,7 +91,7 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		Transform3D rotateTransform = new Transform3D();
 		Matrix3d rotationMatrix = new Matrix3d(rotate);
 		rotationMatrix.mul(opencvCorrection);
-		rotationMatrix.invert();
+//		rotationMatrix.invert();
 		Vector3d translationVector = new Vector3d(translate);
 		Matrix4d mat = new Matrix4d(rotationMatrix, translationVector, scale);
 		rotateTransform.set(mat);
@@ -104,7 +104,7 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		scene.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
 		scene.setCapability(BranchGroup.ALLOW_DETACH);
 		background = new Background();
-		BoundingSphere b = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 320.0);
+		BoundingSphere b = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 500.0);
 		background.setApplicationBounds(b);
 		background.setCapability(Background.ALLOW_IMAGE_WRITE);
 		Color3f ambientColor = new Color3f(0f, 1.0f, 0f);
@@ -118,7 +118,7 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 	private Matrix3d createOpenCVCorrectionMatrix() {
 		Matrix3d correction = new Matrix3d();
 		Transform3D opencvCorrection = new Transform3D();
-		opencvCorrection.rotX(-Math.PI / 4);
+		opencvCorrection.rotX(Math.PI/2);
 		opencvCorrection.get(correction);
 		return correction;
 	}

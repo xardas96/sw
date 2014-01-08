@@ -175,7 +175,6 @@ public class Main {
 						mf3.removeModel();
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 		}
