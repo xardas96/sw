@@ -79,7 +79,7 @@ public class Posit {
 	
 	private double[] correctRotate(double[] rotate) {
 		double[] newRotate = rotate;
-		for(int i = 3; i<6; i++) {
+		for(int i = 3; i<9; i++) {
 			newRotate[i] = -newRotate[i];
 		}
 		return newRotate;
