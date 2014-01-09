@@ -13,7 +13,7 @@ public abstract class ModelLibrary {
 	public static void init() throws Exception {
 		modelMap = new HashMap<>();
 		modelMap.put(1, loadScene("obj\\airtable.obj"));
-		modelMap.put(4, loadScene("obj\\airtable.obj"));
+		modelMap.put(4, loadScene("obj\\airboat.obj"));
 	}
 
 	public static BranchGroup getModel(int code) {

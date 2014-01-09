@@ -11,6 +11,7 @@ import javax.media.j3d.Background;
 import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
+import javax.media.j3d.DirectionalLight;
 import javax.media.j3d.ImageComponent2D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
@@ -20,6 +21,7 @@ import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
 
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
@@ -106,10 +108,14 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		BoundingSphere b = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 500.0);
 		background.setApplicationBounds(b);
 		background.setCapability(Background.ALLOW_IMAGE_WRITE);
-		Color3f ambientColor = new Color3f(0f, 1.0f, 0f);
-		AmbientLight ambientLightNode = new AmbientLight(ambientColor);
-		ambientLightNode.setInfluencingBounds(b);
-		scene.addChild(ambientLightNode);
+		Color3f lightColor = new Color3f(1f, 0f, 0f);
+		Vector3f lightDirection = new Vector3f(0f, 0f, -1f);
+		DirectionalLight light = new DirectionalLight(lightColor, lightDirection);
+		light.setInfluencingBounds(b);
+		AmbientLight ambient = new AmbientLight(new Color3f(0f, 1f, 0f));
+		ambient.setInfluencingBounds(b);
+		scene.addChild(light);
+		scene.addChild(ambient);
 		scene.addChild(background);
 		scene.compile();
 	}
@@ -117,7 +123,7 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 	private Matrix3d createOpenCVCorrectionMatrix() {
 		Matrix3d correction = new Matrix3d();
 		Transform3D opencvCorrection = new Transform3D();
-		opencvCorrection.rotX(-Math.PI/2);
+		opencvCorrection.rotX(-Math.PI / 2);
 		opencvCorrection.get(correction);
 		return correction;
 	}
