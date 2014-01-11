@@ -5,6 +5,10 @@ import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.media.j3d.AmbientLight;
 import javax.media.j3d.Background;
@@ -23,6 +27,8 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
+import ar.models.ArModel;
+
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
 public class ArPanel extends JPanel implements WebcamImageRenderer {
@@ -31,23 +37,18 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 	private Canvas3D canvas3D;
 	private Background background;
 	private BranchGroup scene;
-	private BranchGroup content;
-	private BranchGroup model;
-	private Transform3D rotateTransform;
-	private TransformGroup tg;
 	private boolean sizeSet;
 	private Matrix3d openCVCorrectionMatrix;
+
+	private Map<Integer, LinkedList<ArModel>> models = new HashMap<>();
+	private Map<Integer, LinkedList<TransformGroup>> transforms = new HashMap<>();
+	private Map<Integer, LinkedList<BranchGroup>> innerContents = new HashMap<>();
 
 	public ArPanel() {
 		GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 		canvas3D = new Canvas3D(config);
 		setLayout(new BorderLayout());
 		add(canvas3D, BorderLayout.CENTER);
-		content = new BranchGroup();
-		content.setCapability(BranchGroup.ALLOW_DETACH);
-		tg = new TransformGroup();
-		tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		tg.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
 		createSceneGraph();
 		openCVCorrectionMatrix = createOpenCVCorrectionMatrix();
 		universe = new SimpleUniverse(canvas3D);
@@ -64,28 +65,105 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		}
 	}
 
-	public void setTranslationAndRotation(double[] translate, double[] rotate, double scale) {
-		rotateTransform = createTransform(translate, rotate, scale);
-		tg.setTransform(rotateTransform);
-	}
-
-	public void setModel(BranchGroup model) {
-		if (model != null && !model.equals(this.model)) {
-			this.model = model;
-			this.model.setCapability(BranchGroup.ALLOW_DETACH);
-			content.removeChild(tg);
-			tg.removeAllChildren();
-			tg.addChild(model);
-			content.addChild(tg);
-			scene.addChild(content);
+	public void setModel(ArModel model, double[] translate, double[] rotate, double scale) {
+		if (model != null) {
+			if (models.containsKey(model.getMarkerCode())) {
+				List<ArModel> list = models.get(model.getMarkerCode());
+				boolean found = false;
+				for (int i = 0; i < list.size() && !found; i++) {
+					if (!list.get(i).isRendered()) {
+						ArModel m = list.get(i);
+						m.setRendered(true);
+						Transform3D rot = createTransform(translate, rotate, scale);
+						transforms.get(model.getMarkerCode()).get(i).setTransform(rot);
+						found = true;
+					}
+				}
+				if (!found) {
+					model.setRendered(true);
+					LinkedList<ArModel> modelList = models.get(model.getMarkerCode());
+					LinkedList<TransformGroup> groupList = transforms.get(model.getMarkerCode());
+					LinkedList<BranchGroup> innerList = innerContents.get(model.getMarkerCode());
+					modelList.add(model);
+					Transform3D rot = createTransform(translate, rotate, scale);
+					TransformGroup tg = new TransformGroup();
+					tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+					tg.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+					tg.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+					tg.setCapability(TransformGroup.ALLOW_CHILDREN_READ);
+					tg.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
+					tg.setTransform(rot);
+					tg.addChild(model.getModel());
+					groupList.add(tg);
+					BranchGroup innerContent = new BranchGroup();
+					innerContent.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+					innerContent.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+					innerContent.setCapability(BranchGroup.ALLOW_DETACH);
+					innerList.add(innerContent);
+					innerContent.addChild(tg);
+					scene.addChild(innerContent);
+				}
+			} else {
+				model.setRendered(true);
+				LinkedList<ArModel> modelList = new LinkedList<>();
+				LinkedList<TransformGroup> groupList = new LinkedList<>();
+				LinkedList<BranchGroup> innerList = new LinkedList<>();
+				modelList.add(model);
+				Transform3D rot = createTransform(translate, rotate, scale);
+				TransformGroup tg = new TransformGroup();
+				tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+				tg.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+				tg.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+				tg.setCapability(TransformGroup.ALLOW_CHILDREN_READ);
+				tg.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
+				tg.setTransform(rot);
+				tg.addChild(model.getModel());
+				groupList.add(tg);
+				BranchGroup innerContent = new BranchGroup();
+				innerContent.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+				innerContent.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+				innerContent.setCapability(BranchGroup.ALLOW_DETACH);
+				innerList.add(innerContent);
+				innerContent.addChild(tg);
+				innerContents.put(model.getMarkerCode(), innerList);
+				models.put(model.getMarkerCode(), modelList);
+				transforms.put(model.getMarkerCode(), groupList);
+				scene.addChild(innerContent);
+			}
 		}
 	}
 
-	public void removeModel() {
-		if (model != null) {
-			scene.removeChild(content);
-			tg.removeChild(model);
-			model = null;
+	public void clearModels() {
+		Map<Integer, Integer> toRemove = new HashMap<>();
+		for (Integer id : models.keySet()) {
+			for (ArModel model : models.get(id)) {
+				if (model.isRendered()) {
+					model.setRendered(false);
+				} else {
+					Integer count = toRemove.get(id);
+					count = (count == null ? 1 : count + 1);
+					toRemove.put(id, count);
+				}
+			}
+		}
+		for (Integer id : toRemove.keySet()) {
+			for (int i = 0; i < toRemove.get(id); i++) {
+				LinkedList<ArModel> mods = models.get(id);
+				LinkedList<TransformGroup> tgs = transforms.get(id);
+				LinkedList<BranchGroup> bgs = innerContents.get(id);
+				if (!mods.isEmpty()) {
+					ArModel mod = mods.removeLast();
+					mod.setRendered(false);
+				}
+				if (!tgs.isEmpty()) {
+					TransformGroup trans = tgs.removeLast();
+					trans.removeAllChildren();
+				}
+				if (!bgs.isEmpty()) {
+					BranchGroup bg = bgs.removeLast();
+					scene.removeChild(bg);
+				}
+			}
 		}
 	}
 

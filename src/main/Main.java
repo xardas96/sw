@@ -2,6 +2,7 @@ package main;
 
 import gui.MainFrame;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,7 +12,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.media.j3d.BranchGroup;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -28,6 +28,7 @@ import ar.marker.LengthMarkerFilter;
 import ar.marker.Marker;
 import ar.marker.MarkerFilter;
 import ar.marker.MemoryMarkerFilter;
+import ar.models.ArModel;
 import ar.models.ModelLibrary;
 import ar.orientation.CornerBasedOrientationFinder;
 import ar.perspective.PerspectiveFinder;
@@ -93,10 +94,9 @@ public class Main {
 		while (true) {
 			BufferedImage img = webcam.getImage();
 			if (img != null) {
-				mf3.setImage(img);
 				BufferedImage debugImage = ImageOperations.copyImage(img);
+				BufferedImage erasedMarkers = ImageOperations.copyImage(img);
 				List<Marker> markers = finder.findMarkers(img, debugImage);
-				mf.setImage(debugImage);
 				markers = insideFilter.filterMarkers(markers, img);
 				markers = memoryFilter.filterMarkers(markers, img);
 				try {
@@ -104,8 +104,9 @@ public class Main {
 						markers = new CornerBasedOrientationFinder().setMarkerOrinetation(markers, img);
 						DesktopMarkerFinder.drawMarkers(debugImage, markers);
 						mf.setImage(debugImage);
-						if (!markers.isEmpty()) {
-							Marker marker = markers.get(0);
+						ImageOperations.eraseMarkers(erasedMarkers, markers, Color.BLACK);
+						mf3.setImage(erasedMarkers);
+						for (Marker marker : markers) {
 							double maxX = Marker.getMaxX(marker);
 							double minX = Marker.getMinX(marker);
 							double maxY = Marker.getMaxY(marker);
@@ -125,16 +126,17 @@ public class Main {
 							mf2.setImage(markerImage);
 							mf2.setFPS(CodeDecryptor.decryptCode(code));
 							posit.calculatePosit(marker);
-							mf3.setTransform(posit.getTranslate(), posit.getRotate(), 1.0);
-							BranchGroup model = ModelLibrary.getModel(CodeDecryptor.decryptCode(code));
-							mf3.setModel(model);
+							ArModel model = ModelLibrary.getModel(CodeDecryptor.decryptCode(code));
+							mf3.setModel(model, posit.getTranslate(), posit.getRotate(), 1.0);
 						}
 					} else {
-						mf3.removeModel();
+						mf.setImage(img);
+						mf3.setImage(img);
 					}
 				} catch (Exception e) {
 				}
 			}
+			mf3.clearModels();
 		}
 	}
 }

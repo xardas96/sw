@@ -17,10 +17,12 @@ public abstract class ModelLibrary {
 		modelMap.put(4, loadScene("obj\\airboat.obj"));
 	}
 
-	public static BranchGroup getModel(int code) {
-		BranchGroup output = null;
+	public static ArModel getModel(int code) {
+		ArModel output = null;
 		if (modelMap.containsKey(code)) {
-			output = modelMap.get(code).getSceneGroup();
+			BranchGroup model = modelMap.get(code).getSceneGroup();
+			output = new ArModel(model);
+			output.setMarkerCode(code);
 		}
 		return output;
 	}
@@ -30,6 +32,7 @@ public abstract class ModelLibrary {
 		ObjectFile f = new ObjectFile();
 		f.setFlags(Loader.LOAD_ALL);
 		scene = f.load(fileName);
+		scene.getSceneGroup().setCapability(BranchGroup.ALLOW_DETACH);
 		return scene;
 	}
 }

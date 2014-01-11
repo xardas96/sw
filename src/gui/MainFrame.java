@@ -5,10 +5,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 
-import javax.media.j3d.BranchGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+
+import ar.models.ArModel;
 
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = -8026416994513756565L;
@@ -34,21 +35,15 @@ public class MainFrame extends JFrame {
 		setTitle(title);
 	}
 
-	public void setTransform(double[] translate, double[] rotate, double scale) {
+	public void setModel(ArModel model, double[] translate, double[] rotate, double scale) {
 		if (ar) {
-			((ArPanel) panel).setTranslationAndRotation(translate, rotate, scale);
+			((ArPanel) panel).setModel(model, translate, rotate, scale);
 		}
 	}
 
-	public void setModel(BranchGroup model) {
+	public void clearModels() {
 		if (ar) {
-			((ArPanel) panel).setModel(model);
-		}
-	}
-
-	public void removeModel() {
-		if (ar) {
-			((ArPanel) panel).removeModel();
+			((ArPanel) panel).clearModels();
 		}
 	}
 

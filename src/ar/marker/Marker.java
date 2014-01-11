@@ -54,27 +54,26 @@ public class Marker {
 	public Vector2d getCorner4() {
 		return corner4;
 	}
-	
+
 	public void setCorner1(Vector2d c) {
-		corner1 =c;
+		corner1 = c;
 	}
 
 	public void setCorner2(Vector2d c) {
-		corner2=  c;
+		corner2 = c;
 	}
 
 	public void setCorner3(Vector2d c) {
 		corner3 = c;
 	}
 
-	public void  setCorner4(Vector2d c) {
+	public void setCorner4(Vector2d c) {
 		corner4 = c;
 	}
-	
-	public Vector2d[] getCornerArray(){
-		return new Vector2d[]{corner1, corner2, corner3, corner4};
+
+	public Vector2d[] getCornerArray() {
+		return new Vector2d[] { corner1, corner2, corner3, corner4 };
 	}
-	
 
 	/**
 	 * Checks if m2 is inside m1
@@ -90,20 +89,20 @@ public class Marker {
 		result &= m2.corner4.getX() < maxX && m2.corner4.getX() > minX && m2.corner4.getY() < maxY && m2.corner4.getY() > minY;
 		return result;
 	}
-	
-	public static double getMaxX(Marker m){
-		return Math.max(m.corner1.getX(), Math.max(m.corner2.getX(), Math.max(m.corner3.getX(),m.corner4.getX())));
+
+	public static double getMaxX(Marker m) {
+		return Math.max(m.corner1.getX(), Math.max(m.corner2.getX(), Math.max(m.corner3.getX(), m.corner4.getX())));
 	}
-	
-	public static double getMinX(Marker m){
-		return Math.min(m.corner1.getX(), Math.min(m.corner2.getX(), Math.min(m.corner3.getX(),m.corner4.getX())));
+
+	public static double getMinX(Marker m) {
+		return Math.min(m.corner1.getX(), Math.min(m.corner2.getX(), Math.min(m.corner3.getX(), m.corner4.getX())));
 	}
-	
-	public static double getMaxY(Marker m){
-		return Math.max(m.corner1.getY(), Math.max(m.corner2.getY(), Math.max(m.corner3.getY(),m.corner4.getY())));
+
+	public static double getMaxY(Marker m) {
+		return Math.max(m.corner1.getY(), Math.max(m.corner2.getY(), Math.max(m.corner3.getY(), m.corner4.getY())));
 	}
-	
-	public static double getMinY(Marker m){
-		return Math.min(m.corner1.getY(), Math.min(m.corner2.getY(), Math.min(m.corner3.getY(),m.corner4.getY())));
+
+	public static double getMinY(Marker m) {
+		return Math.min(m.corner1.getY(), Math.min(m.corner2.getY(), Math.min(m.corner3.getY(), m.corner4.getY())));
 	}
 }
