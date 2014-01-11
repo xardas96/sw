@@ -1,0 +1,212 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+\usetheme{Warsaw}
+\setbeamercovered{transparent}
+}
+
+\usepackage[english, polish]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{polski}
+
+\usepackage{mathptmx}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{float}
+
+\title{Systemy wizyjne \\ \textbf{Wspomagana rzeczywistoœæ}}
+\subtitle{Prezentacja koñcowa}
+
+\author{Jacek Miiller, Roman Sorokowski}
+
+\institute[Universities of]
+{Informatyka \\ Wydzia³ Informatyki i Zarz¹dzania \\ Politechnika
+Wroc³awska}
+
+\date{13 stycznia 2014}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\section{Wstêp}
+\begin{frame}
+\frametitle{Plan prezentacji}
+\begin{itemize}
+  \item Wizja systemu
+  \item Etapy przetwa¿ania obrazu
+  \begin{itemize}
+    \item Wykrywanie markera
+    \item Ustalenie orientacji
+    \item Dekodowanie markera
+    \item Wyœwietlanie modelu
+  \end{itemize}
+  \item Plany dalszego rozwoju
+  \item Prezentacja systemu
+\end{itemize}
+\end{frame}
+
+\section{Wizja systemu}
+\begin{frame}
+\frametitle{Wizja systemu}
+\begin{itemize}
+  \item Dzia³anie w czasie rzeczywistym
+  \item Wykrywanie markerów, przy ró¿nych warunkach oœwietlenia i nachylenia
+  \item Wyœwietlanie obiektów 3D w oparciu o kod zawarty w markerze
+\end{itemize}
+\end{frame}
+
+\section{Etapy przetwa¿ania obrazu}
+\subsection{Wykrywanie markera}
+\begin{frame}
+\frametitle{Obraz z kamery}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{stage0}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etap 1a - Konwolucja pochodn¹ Gaussa}
+\begin{columns}[t]
+\begin{column}{5cm}
+\centering
+	\includegraphics[scale=0.25]{stage0x}
+\end{column}
+\begin{column}{5cm}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.25]{stage0y}
+\end{figure}
+\end{column}
+	
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etap 1b - Punkty krawêdziowe}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{stage1}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etap 2 - £¹czenie punktów w regionach}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{stage2}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etap 3 - £¹czenie linii}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{stage3}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etap 4 - Wyd³u¿anie linii}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{stage4}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etap 5 - Filtrowanie linii bez k¹tów}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{stage5}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etap 6 - Wykrycie markerów}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{stage6}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Etap 7 - Filtrowanie markerów}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{stage7}
+\end{figure}
+\end{frame}
+
+\subsection{Ustalenie orientacji}
+\begin{frame}
+\frametitle{Ustalanie orientacji}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{stage8}
+\end{figure}
+\end{frame}
+
+\subsection{Dekodowanie markera}
+\begin{frame}
+\frametitle{Dekodowanie markera}
+\begin{figure}
+	\centering
+	\includegraphics[scale=1.5]{stage8-5}
+\end{figure}
+\end{frame}
+
+\subsection{Wyœwietlanie modelu}
+
+\begin{frame}
+\frametitle{Ustalanie pozycji kamery}
+\begin{itemize}
+  \item wyznaczenie projekcji punktu P w przestrzeñ 3D
+	\begin{equation}
+		p = \left[R|t\right]P 
+	\end{equation}
+  \item rzutowanie punktu P w przestrzeñ 2D
+  	\begin{equation}
+		q = Kp
+	\end{equation}
+  \item macierz kalibracji kamery
+ 	\begin{equation}
+		K = macierz
+	\end{equation}
+   \item algorytm PnP
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Wyœwietlanie modelu}
+\begin{figure}
+	\centering
+	\includegraphics[scale=1]{stage9}
+\end{figure}
+\end{frame}
+
+\section{Plany dalszego rozwoju}
+\begin{frame}
+\frametitle{Plany dalszego rozwoju}
+\begin{itemize}
+  \item optymalizacja (przyspieszenie dzia³ania)
+  \item odpornoœæ na szumy (warunki oœwietleniowe, niedoskona³oœci kamery)
+  \item platformy mobilne
+\end{itemize}
+\end{frame}
+
+\section{Zakoñczenie}
+\begin{frame}
+\frametitle{Zakoñczenie}
+	\centering
+	\textbf{Dziêkujemy za uwagê!}
+\end{frame}
+
+\end{document}
