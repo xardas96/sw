@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import javax.media.j3d.BranchGroup;
 
+import com.sun.j3d.loaders.Loader;
 import com.sun.j3d.loaders.Scene;
 import com.sun.j3d.loaders.objectfile.ObjectFile;
 
@@ -12,7 +13,7 @@ public abstract class ModelLibrary {
 
 	public static void init() throws Exception {
 		modelMap = new HashMap<>();
-		modelMap.put(1, loadScene("obj\\airtable.obj"));
+		modelMap.put(1, loadScene("obj\\skyscraper.obj"));
 		modelMap.put(4, loadScene("obj\\airboat.obj"));
 	}
 
@@ -27,7 +28,7 @@ public abstract class ModelLibrary {
 	private static Scene loadScene(String fileName) throws Exception {
 		Scene scene = null;
 		ObjectFile f = new ObjectFile();
-		f.setFlags(ObjectFile.RESIZE | ObjectFile.TRIANGULATE | ObjectFile.STRIPIFY);
+		f.setFlags(Loader.LOAD_ALL);
 		scene = f.load(fileName);
 		return scene;
 	}

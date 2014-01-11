@@ -108,11 +108,11 @@ public class ArPanel extends JPanel implements WebcamImageRenderer {
 		BoundingSphere b = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 500.0);
 		background.setApplicationBounds(b);
 		background.setCapability(Background.ALLOW_IMAGE_WRITE);
-		Color3f lightColor = new Color3f(1f, 0f, 0f);
+		Color3f lightColor = new Color3f(1f, 1f, 1f);
 		Vector3f lightDirection = new Vector3f(0f, 0f, -1f);
 		DirectionalLight light = new DirectionalLight(lightColor, lightDirection);
 		light.setInfluencingBounds(b);
-		AmbientLight ambient = new AmbientLight(new Color3f(0f, 1f, 0f));
+		AmbientLight ambient = new AmbientLight(new Color3f(1f, 1f, 1f));
 		ambient.setInfluencingBounds(b);
 		scene.addChild(light);
 		scene.addChild(ambient);
