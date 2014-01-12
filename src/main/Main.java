@@ -38,6 +38,7 @@ import ar.utils.Vector2d;
 import com.github.sarxos.webcam.Webcam;
 
 public class Main {
+	private static final boolean DEBUG = false;
 
 	public static void main(String[] args) throws Exception {
 		ModelLibrary.init();
@@ -66,15 +67,17 @@ public class Main {
 		});
 
 		final MainFrame mf2 = new MainFrame(null, "Marker", false);
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				mf2.setLocation(0, 350);
-				mf2.setVisible(true);
-			}
-		});
+		if(DEBUG) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					mf2.setLocation(0, 350);
+					mf2.setVisible(true);
+				}
+			});
+		}
 
-		final MainFrame mf3 = new MainFrame(null, "Silnik", true);
+		final MainFrame mf3 = new MainFrame(null, "AR", true);
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -90,6 +93,7 @@ public class Main {
 		MarkerFilter memoryFilter = new MemoryMarkerFilter(new MarkerFilter[] { cornerFilter, lengthFilter });
 
 		Posit posit = new Posit(cameraDimension);
+		CodeRetreiver cr = new CodeRetreiver();
 
 		while (true) {
 			BufferedImage img = webcam.getImage();
@@ -121,12 +125,14 @@ public class Main {
 							PerspectiveFinder pFinder = new PerspectiveFinder(MarkerFinder.MARKER_DIMENSION.width, MarkerFinder.MARKER_DIMENSION.height);
 							Matrix m = pFinder.findPerspectiveMatrix(subMarker);
 							BufferedImage markerImage = pFinder.transformBufferedImage(m, subImage, MarkerFinder.MARKER_DIMENSION);
-							CodeRetreiver cr = new CodeRetreiver();
 							int[] code = cr.retreiveCode(markerImage);
-							mf2.setImage(markerImage);
-							mf2.setFPS(CodeDecryptor.decryptCode(code));
+							int c = CodeDecryptor.decryptCode(code);
+							if(DEBUG) {
+								mf2.setImage(markerImage);
+								mf2.setFPS(c);
+							}
 							posit.calculatePosit(marker);
-							ArModel model = ModelLibrary.getModel(CodeDecryptor.decryptCode(code));
+							ArModel model = ModelLibrary.getModel(c);
 							mf3.setModel(model, posit.getTranslate(), posit.getRotate(), 1.0);
 						}
 					} else {

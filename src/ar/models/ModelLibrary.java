@@ -20,7 +20,9 @@ public abstract class ModelLibrary {
 	public static ArModel getModel(int code) {
 		ArModel output = null;
 		if (modelMap.containsKey(code)) {
-			BranchGroup model = modelMap.get(code).getSceneGroup();
+			BranchGroup model = new BranchGroup();
+			model.addChild(modelMap.get(code).getSceneGroup().cloneTree());
+			model.setCapability(BranchGroup.ALLOW_DETACH);
 			output = new ArModel(model);
 			output.setMarkerCode(code);
 		}
@@ -32,7 +34,6 @@ public abstract class ModelLibrary {
 		ObjectFile f = new ObjectFile();
 		f.setFlags(Loader.LOAD_ALL);
 		scene = f.load(fileName);
-		scene.getSceneGroup().setCapability(BranchGroup.ALLOW_DETACH);
 		return scene;
 	}
 }
