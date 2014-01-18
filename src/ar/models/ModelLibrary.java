@@ -13,8 +13,8 @@ public abstract class ModelLibrary {
 
 	public static void init() throws Exception {
 		modelMap = new HashMap<>();
-		modelMap.put(1, loadScene("obj\\skyscraper.obj"));
-		modelMap.put(4, loadScene("obj\\airboat.obj"));
+		modelMap.put(4, loadScene("obj\\skyscraper.obj"));
+		modelMap.put(1, loadScene("obj\\airboat.obj"));
 	}
 
 	public static ArModel getModel(int code) {

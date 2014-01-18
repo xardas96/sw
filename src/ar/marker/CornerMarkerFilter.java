@@ -10,7 +10,7 @@ import ar.utils.Vector2d;
  *Works after orientation fix in markers! 
  */
 public class CornerMarkerFilter implements MarkerFilter{
-	private static final double dotTreshold = 0.2;
+	public static double dotTreshold = 0.3;
 
 	@Override
 	public List<Marker> filterMarkers(List<Marker> marker, BufferedImage image) {

@@ -56,27 +56,32 @@ public class Vector2d {
 		double y = this.y * vector.y;
 		return new Vector2d(x, y);
 	}
-	
+
 	public void multiply(double d) {
-		x *=d;
-		y*=d;
+		x *= d;
+		y *= d;
 	}
-	
-	public void divide(double d){
+
+	public void divide(double d) {
 		x /= d;
 		y /= d;
+	}
+
+	public Vector2d negate() {
+		return new Vector2d(-x, -y);
 	}
 
 	public static double dot(Vector2d v1, Vector2d v2) {
 		return v1.x * v2.x + v1.y * v2.y;
 	}
-	
-	public static double cross(Vector2d v1, Vector2d v2){
-		return v1.getX()*v2.getY()-v2.getX()*v1.getY();
+
+	public static double cross(Vector2d v1, Vector2d v2) {
+		return v1.getX() * v2.getY() - v2.getX() * v1.getY();
 	}
 
-	public Vector2d negate() {
-		return new Vector2d(-x, -y);
+	public static double distance(Vector2d v1, Vector2d v2) {
+		double distanceSquared = (v2.x - v1.x) * (v2.x - v1.x) + (v2.y - v1.y) * (v2.y - v1.y);
+		return Math.sqrt(distanceSquared);
 	}
 
 	public String toString() {

@@ -12,13 +12,15 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import tests.FilterTester;
+import tests.ui.AnnotateMarkerPanel;
 import Jama.Matrix;
 import ar.DesktopMarkerFinder;
 import ar.MarkerFinder;
-import ar.camera.CameraIntristics;
 import ar.code.CodeDecryptor;
 import ar.code.CodeRetreiver;
 import ar.image.ImageOperations;
@@ -41,9 +43,12 @@ public class Main {
 	private static final boolean DEBUG = false;
 
 	public static void main(String[] args) throws Exception {
-		ModelLibrary.init();
-		CameraIntristics.loadInstisticsFromFile("out_camera_data_320.xml");
-		testCamera(new Dimension(320, 240));
+		// ModelLibrary.init();
+		// CameraIntristics.loadInstisticsFromFile("out_camera_data_320.xml");
+		// testCamera(new Dimension(320, 240));
+		// testImages("tests\\frames", "test1", true);
+		// annotateImages("tests\\frames_1");
+		test();
 	}
 
 	private static void testCamera(Dimension cameraDimension) throws IOException {
@@ -67,7 +72,7 @@ public class Main {
 		});
 
 		final MainFrame mf2 = new MainFrame(null, "Marker", false);
-		if(DEBUG) {
+		if (DEBUG) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -95,9 +100,12 @@ public class Main {
 		Posit posit = new Posit(cameraDimension);
 		CodeRetreiver cr = new CodeRetreiver();
 
+		int i = 0;
 		while (true) {
 			BufferedImage img = webcam.getImage();
 			if (img != null) {
+				ImageIO.write(img, "png", new File("frames\\" + i + ".png"));
+				i++;
 				BufferedImage debugImage = ImageOperations.copyImage(img);
 				BufferedImage erasedMarkers = ImageOperations.copyImage(img);
 				List<Marker> markers = finder.findMarkers(img, debugImage);
@@ -127,7 +135,7 @@ public class Main {
 							BufferedImage markerImage = pFinder.transformBufferedImage(m, subImage, MarkerFinder.MARKER_DIMENSION);
 							int[] code = cr.retreiveCode(markerImage);
 							int c = CodeDecryptor.decryptCode(code);
-							if(DEBUG) {
+							if (DEBUG) {
 								mf2.setImage(markerImage);
 								mf2.setFPS(c);
 							}
@@ -140,9 +148,38 @@ public class Main {
 						mf3.setImage(img);
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			mf3.clearModels();
+		}
+	}
+
+	private static final void annotateImages(String inputPath) {
+		final JFrame frame = new JFrame("Annotate");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(new Dimension(650, 350));
+		AnnotateMarkerPanel panel = new AnnotateMarkerPanel();
+		File file = new File(inputPath);
+		File[] files = file.listFiles();
+		panel.setImages(files);
+		frame.setContentPane(panel);
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				frame.setVisible(true);
+			}
+		});
+	}
+
+	private static final void test() throws Exception {
+		for (CornerMarkerFilter.dotTreshold = 0.1; CornerMarkerFilter.dotTreshold <= 1.0; CornerMarkerFilter.dotTreshold += 0.1) {
+			FilterTester fTester = new FilterTester(10);
+			fTester.test("tests\\frames-annotations.txt", "tests\\filter-noFilters.txt");
+		}
+		for (LengthMarkerFilter.lengthTreshold = 0.1; LengthMarkerFilter.lengthTreshold <= 1.0; LengthMarkerFilter.lengthTreshold += 0.1) {
+			FilterTester fTester = new FilterTester(10);
+			fTester.test("tests\\frames-annotations.txt", "tests\\filter-lengthTreshold-" + LengthMarkerFilter.lengthTreshold + ".txt");
 		}
 	}
 }

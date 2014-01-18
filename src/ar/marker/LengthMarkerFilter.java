@@ -7,7 +7,7 @@ import java.util.List;
 public class LengthMarkerFilter implements MarkerFilter {
 	//przy ma³ym tresholdzie (0.1), Dobrze dzia³a eleminuj¹c "niepe³ne" markery, 
 	//ale niestety eliminuje tez markery pokazywane pod du¿ym k¹tem
-	private static final double lengthTreshold = 0.1; 
+	public static double lengthTreshold = 0.1; 
 	@Override
 	public List<Marker> filterMarkers(List<Marker> marker, BufferedImage image) {
 		List<Marker> result = new ArrayList<Marker>();
